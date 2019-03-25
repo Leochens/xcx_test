@@ -9,7 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "connect-redis": "^3.4.1",
     "express": "^4.16.4",
+    "express-session": "^1.15.6",
+    "redis": "^2.8.0",
     "request": "^2.88.0"
   }
 }
