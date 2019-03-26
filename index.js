@@ -1,9 +1,12 @@
 const express = require('express')
 const app = express()
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const jsonParser = bodyParser.json();
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
-const router  = require('./routes/index');
+const authRouter  = require('./routes/auth');
+const dataRouter = require('./routes/data');
 const client = require('./redis');
 const options = {
     client:client,
@@ -12,6 +15,8 @@ const options = {
     // "ttl": 60 * 60 * 24 * 30,   //Session的有效期为30天
     "ttl": 60*60,   //Session的有效期为30秒
 };
+app.use(jsonParser);
+app.use(bodyParser.urlencoded({ extended: false }));  
 
 // 此时req对象还没有session这个属性
 app.use(session({
@@ -20,11 +25,11 @@ app.use(session({
 }));
 app.use(cookieParser());
 
+
 // 经过中间件处理后，可以通过req.session访问session object。比如如果你在session中保存了session.userId就可以根据userId查找用户的信息了。
-app.use('/',router);
-app.get('/', (req, res) => { console.log(req); res.send('Hello World!') });
-
-
+app.use('/',authRouter);
+app.use('/',dataRouter);
+app.get('/', (req, res) => {  res.send('Hello World!') });
 app.get('/fetch', (req, res, next) => {
     if (req.session.user) {
         const user = req.session.user;

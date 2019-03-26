@@ -26,7 +26,8 @@ function checkSession(req,sessionID){
     })
 }
 router.get('*',function(req,res,next){
-    
+    // res.json("hello??");
+    next();
 
 });
 // 用户在第一次登陆的时候触发这个api
@@ -50,6 +51,7 @@ router.get('/login/:code', (req, res) => {
             log(req.method,req.url,data);
             if(data.session_key && data.openid){
                 req.session.user = data;
+                res.cookie('SID',req.sessionID); // 把SessionId发给小程序
                 res.json(req.sessionID);
             }else{
                 res.json("登陆失败")
@@ -58,32 +60,37 @@ router.get('/login/:code', (req, res) => {
     }
     request(options, callback);
 });
-
-router.get('/token/:sessionID', function (req, res) {
-    const sessionID = req.param('sessionID');
-    if(!checkSession(req,sessionID)) res.send("session 无效") ;return ;
-
-    var proxy_url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appID}&secret=${appSecret}`;
+router.post('/auth', (req, res) => {
+    const code = req.body.code;
+    console.log("code==>",code);
     var method = req.method.toUpperCase();
+    var proxy_url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' + appID + '&secret=' + appSecret + '&js_code=' + code + '&grant_type=authorization_code';
 
     var options = {
         headers: { "Connection": "close" },
         url: proxy_url,
         method: method,
-        json: true,
-        // body: req.body
+        json: true
     };
-
     function callback(error, response, data) {
+        console.log(req.session)
         if (!error && response.statusCode == 200) {
-            console.log('------token接口数据------\n', data);
-
-            res.json(data)
+            log(req.method,req.url,data);
+            if(data.session_key && data.openid){
+                req.session.user = data;
+                res.cookie('hello','hello');
+                res.cookie('SID',req.sessionID); // 把SessionId发给小程序
+                // console.log(res);
+                res.json({
+                    SID:req.sessionID
+                });
+            }else{
+                res.json("登陆失败")
+            }
         }
-    }
+    }    request(options, callback);
+});
 
-    request(options, callback);
-})
 
 
 module.exports = router;
