@@ -8,6 +8,8 @@ const RedisStore = require('connect-redis')(session);
 const authRouter  = require('./routes/auth');
 const dataRouter = require('./routes/data');
 const client = require('./redis');
+const log = require('./utils/log');
+
 const options = {
     client:client,
     "host": "127.0.0.1",
@@ -25,10 +27,16 @@ app.use(session({
 }));
 app.use(cookieParser());
 
-
+const logPrint = function(req,res,next){
+    log(req.method,req.url);
+    next();
+};
+app.get('*',logPrint);
+app.post('*',logPrint);
 // 经过中间件处理后，可以通过req.session访问session object。比如如果你在session中保存了session.userId就可以根据userId查找用户的信息了。
 app.use('/',authRouter);
 app.use('/',dataRouter);
+
 app.get('/', (req, res) => {  res.send('Hello World!') });
 app.get('/fetch', (req, res, next) => {
     if (req.session.user) {

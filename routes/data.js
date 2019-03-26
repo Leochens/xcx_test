@@ -2,7 +2,9 @@ const express = require('express')
 const router = express.Router();
 
 router.get('/users',function(req,res){
-    console.log('cookie===>',req.cookies);
+    console.log('header',req.headers['cookie']);
+
+
     res.json(
         {
            data:[
