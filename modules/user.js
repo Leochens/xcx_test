@@ -70,11 +70,27 @@ User.getUserInfoByOpenId = function (openid) {
     // return u_id;
 }
 
-User.updateUserById = function (userinfo) {
+User.updateUserById = function (u_id,userinfo) {
     // 根据openid来更新用户的信息 然后返回用户的u_id
     console.log("前端用户已经确认得到userinfo了,准备根据发来的u_id和userinfo更新用户表表");
-    const sql = "";
-
+    const sql = `UPDATE TABLE user SET
+        nickName= '${userinfo.nickName}',
+        phoneNumber= '${user.phoneNumber}',
+        city='${userinfo.city}',
+        province='${userinfo.province}',
+        country='${userinfo.country}',
+        avatar_url='${userinfo.avatar_url}',
+        gender=${userinfo.gender}
+        WHERE
+        u_id = '${u_id}'
+    `;
+    return new Promise(function(resolve,reject){
+        conn.query(sql,function(err,res){
+            if(err){console.log("更新失败");return reject(err)}
+            console.log("更新成功");
+            return resolve(true);
+        });
+    });
 }
 
 module.exports = User;
