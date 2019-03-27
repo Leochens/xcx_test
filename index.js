@@ -15,12 +15,10 @@ const options = {
     "host": "127.0.0.1",
     "port": "6379",
     // "ttl": 60 * 60 * 24 * 30,   //Session的有效期为30天
-    "ttl": 60*60,   //Session的有效期为30秒
+    "ttl": 60*60,   //Session的有效期为1 hour
 };
 app.use(jsonParser);
 app.use(bodyParser.urlencoded({ extended: false }));  
-
-// 此时req对象还没有session这个属性
 app.use(session({
     store: new RedisStore(options),
     secret: 'Leochens'
@@ -33,7 +31,6 @@ const logPrint = function(req,res,next){
 };
 app.get('*',logPrint);
 app.post('*',logPrint);
-// 经过中间件处理后，可以通过req.session访问session object。比如如果你在session中保存了session.userId就可以根据userId查找用户的信息了。
 app.use('/',authRouter);
 app.use('/',dataRouter);
 
