@@ -70,17 +70,18 @@ User.getUserInfoByOpenId = function (openid) {
     // return u_id;
 }
 
-User.updateUserById = function (u_id,userinfo) {
+User.updateUserById = function (u_id,userInfo) {
     // 根据openid来更新用户的信息 然后返回用户的u_id
-    console.log("前端用户已经确认得到userinfo了,准备根据发来的u_id和userinfo更新用户表表");
-    const sql = `UPDATE TABLE user SET
-        nickName= '${userinfo.nickName}',
-        phoneNumber= '${user.phoneNumber}',
-        city='${userinfo.city}',
-        province='${userinfo.province}',
-        country='${userinfo.country}',
-        avatar_url='${userinfo.avatar_url}',
-        gender=${userinfo.gender}
+    console.log("前端用户已经确认得到userInfo了,准备根据发来的u_id和userInfo更新用户表表");
+    const sql = `UPDATE user 
+        SET
+        nick_name= '${userInfo.nickName}',
+        phone_number= '${userInfo.phoneNumber}',
+        city='${userInfo.city}',
+        province='${userInfo.province}',
+        country='${userInfo.country}',
+        avatar_url='${userInfo.avatarUrl}',
+        gender=${userInfo.gender}
         WHERE
         u_id = '${u_id}'
     `;

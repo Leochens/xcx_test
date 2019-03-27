@@ -46,13 +46,30 @@ router.post('/auth', (req, res) => {
 
 router.put('/profile/:u_id', (req, res) => {
     // const u_id = req.body.id
+    const u_id = req.param('u_id');
+    const userInfo = req.body.userInfo;
     console.log("/profile 请求参数",req.body,req.param('u_id'));
+    User.updateUserById(u_id,userInfo).then(function(flag){
+        if(flag){
+            return res.json({
+                id:u_id,
+                ...userInfo
+            });
+        }else{
+            res.statusCode = 500;
+            return res.json({
+                errMsg:'更新用户profile失败'
+            })
+        }
+    }).catch(function(err){
+        console.log(err);
+        res.statusCode = 500;
+        res.json({
+            errMsg:'更新用户profile失败'
+        })
+    })
     // 这里是要更改用户的info
     // User.openid
-
-    res.json({
-        code: 200
-    })
 })
 
 
