@@ -24,10 +24,11 @@ User.getUserInfoById = function (id, callback) {
  */
 User.insertUserByOpenId = function (openid) {
     return new Promise(function (resolve, reject) {
-        User.checkUserExist(openid).then(function (res) {
+        User.getUserInfoByOpenId(openid).then(function (res) {
                 if (res.length === 0) { // 不存在用户 插入
                     console.log(res);
                     const u_id = genId.genUniqueUserId(openid);
+                    console.log('这边来了一个新人，大家一起欺负他,他的openid==>',openid);
                     const sql = `insert into user(u_id,openid) values('${u_id}','${openid}');`
                     conn.query(sql,function(err,res){
                         if(err){
@@ -36,6 +37,7 @@ User.insertUserByOpenId = function (openid) {
                         return resolve(u_id);
                     });
                 }else{
+                    console.log("老用户登陆哦==>",openid);
                     resolve(res[0].u_id);
                 }
             }
@@ -68,14 +70,10 @@ User.getUserInfoByOpenId = function (openid) {
     // return u_id;
 }
 
-User.updateUserByOpenId = function (openid) {
+User.updateUserById = function (userinfo) {
     // 根据openid来更新用户的信息 然后返回用户的u_id
-    const sql = `SET @update_id := 0;
-                UPDATE user SET 
-                    row = 'value', 
-                id = (SELECT @update_id := id)
-                WHERE some_other_row = 'blah' LIMIT 1;
-                SELECT @update_id';`;
+    console.log("前端用户已经确认得到userinfo了,准备根据发来的u_id和userinfo更新用户表表");
+    const sql = "";
 
 }
 
