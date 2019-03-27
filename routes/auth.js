@@ -28,13 +28,14 @@ router.post('/auth', (req, res) => {
             if (data.session_key && data.openid) {
                 req.session.user = data;
                 User.insertUserByOpenId(data.openid).then(function (u_id) {
-                    console.log("用户正在登陆，新老用户都可以获得一个u_id=>",u_id);
+                    console.log("用户正在登陆，新老用户都可以获得一个u_id=>", u_id);
                     res.json({
                         SID: req.sessionID,
                         u_id
                     });
-                }).catch(function (err) { console.log('获取u_id失败，检查数据库查询问题吧老铁..',err) })
- 
+                    console.log("用户登录完成")
+                }).catch(function (err) { console.log('获取u_id失败，检查数据库查询问题吧老铁..', err) })
+
             } else {
                 console.log('/auth 登录失败', error);
                 res.json("登陆失败")
@@ -42,6 +43,17 @@ router.post('/auth', (req, res) => {
         }
     } request(options, callback);
 });
+
+router.put('/profile/:u_id', (req, res) => {
+    // const u_id = req.body.id
+    console.log("/profile 请求参数",req.body,req.param('u_id'));
+    // 这里是要更改用户的info
+    // User.openid
+
+    res.json({
+        code: 200
+    })
+})
 
 
 
