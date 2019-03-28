@@ -46,7 +46,7 @@ CREATE TABLE `task` (
   `is_completed` tinyint(4) DEFAULT NULL,
   `tf_id` varchar(32) DEFAULT NULL,
   `is_important` tinyint(4) NOT NULL DEFAULT '0' COMMENT '此子任务在任务流中是否是重要的',
-  FOREIGN KEY(tf_id) REFERENCES task_flow(id)
+  FOREIGN KEY(tf_id) REFERENCES task_flow(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -57,7 +57,7 @@ CREATE TABLE `category` (
   `name` varchar(16) DEFAULT NULL,
   `u_id` varchar(32) DEFAULT NULL COMMENT '谁创建的分类',
   `tf_id` varchar(32) DEFAULT NULL COMMENT '哪个任务流属于这个分类',
-  FOREIGN KEY(u_id) REFERENCES user(id),
+  FOREIGN KEY(u_id) REFERENCES user(id) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY(tf_id) REFERENCES task_flow(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -74,8 +74,8 @@ CREATE TABLE `comment` (
   `create_time` datetime DEFAULT NULL,
   `u_id` varchar(32) DEFAULT NULL,
   `t_id` varchar(32) DEFAULT NULL,
-  FOREIGN KEY(u_id) REFERENCES user(id),
-  FOREIGN KEY(t_id) REFERENCES task(id)
+  FOREIGN KEY(u_id) REFERENCES user(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY(t_id) REFERENCES task(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 -- --------------------------------------------------------
@@ -89,8 +89,8 @@ CREATE TABLE `image` (
   `t_id` varchar(32) DEFAULT NULL,
   `u_id` varchar(32) DEFAULT NULL,
   `url` text,
-    FOREIGN KEY(u_id) REFERENCES user(id),
-  FOREIGN KEY(t_id) REFERENCES task(id)
+    FOREIGN KEY(u_id) REFERENCES user(id) ON UPDATE CASCADE ON DELETE CASCADE ,
+  FOREIGN KEY(t_id) REFERENCES task(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 -- --------------------------------------------------------
@@ -106,7 +106,7 @@ CREATE TABLE `message` (
   `create_time` datetime DEFAULT NULL,
   `is_read` tinyint(4) DEFAULT NULL,
   `to_user_id` varchar(32) DEFAULT NULL,
-    FOREIGN KEY(to_user_id) REFERENCES user(id)
+    FOREIGN KEY(to_user_id) REFERENCES user(id) ON UPDATE CASCADE ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -124,7 +124,7 @@ CREATE TABLE `user_task` (
   `user_status` tinyint(4) DEFAULT '1' COMMENT '用户状态 1正常 0请假',
   `break_reason` varchar(64) DEFAULT NULL COMMENT '请假原因',
   `refuse_reason` varchar(64) DEFAULT NULL COMMENT '驳回请假请求的原因',
-   FOREIGN KEY(u_id) REFERENCES user(id),
+   FOREIGN KEY(u_id) REFERENCES user(id) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY(t_id) REFERENCES task(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -139,6 +139,6 @@ CREATE TABLE `user_taskflow` (
   `tf_id` varchar(32) ,
   `role` tinyint(4) DEFAULT '0' COMMENT '用户对于此任务流的角色 1leader 0member',
   `is_favor` tinyint(4) DEFAULT '0' COMMENT '是否星标 1是 0否',
-   FOREIGN KEY(u_id) REFERENCES user(id),
+   FOREIGN KEY(u_id) REFERENCES user(id) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY(tf_id) REFERENCES task_flow(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
