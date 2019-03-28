@@ -12,8 +12,8 @@ function checkSession(sessionID) {
 
     return new Promise(function (resolve, reject) {
         // 检测是否有sessionId sessionId 过期没
-        client.get('sess:' + sessionID, function (err, reply) {
-            console.log("sess:===>", sessionID);
+        client.get('SID:' + sessionID, function (err, reply) {
+            console.log("SID:===>", sessionID);
             if (err) {
                 console.log(err);
                 return reject(err);

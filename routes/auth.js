@@ -4,7 +4,23 @@ const request = require('request');
 const appID = "wxf18a4b27a92c63bf";
 const appSecret = "bb302760e45bf6b7072b4eee0c1b0c8d"
 const User = require('../modules/user');
-
+const session = require('express-session');
+const RedisStore = require('connect-redis')(session);
+const client = require('../redis');
+const options = {
+    client:client,
+    "host": "127.0.0.1",
+    "port": "6379",
+    // "ttl": 60 * 60 * 24 * 30,   //Session的有效期为30天
+    "ttl": 60*60,   //Session的有效期为1 hour
+    "prefix":'SID:'
+};
+router.use(session({
+    store: new RedisStore(options),
+    secret: 'Leochens',
+    resave: false, // 假设每次登陆，就算会话存在也重新保存一次
+    saveUninitialized: false, //强制保存未初始化的会话到存储器
+}))
 
 
 /***
@@ -64,7 +80,7 @@ router.put('/profile/:u_id', (req, res) => {
     }).catch(function(err){
         console.log(err);
         res.statusCode = 500;
-        res.json({
+        res.json({ 
             errMsg:'更新用户profile失败'
         })
     })
