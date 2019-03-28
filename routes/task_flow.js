@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router();
 const checkSession = require('../utils/checkSession');
 const taskFlow = require('../modules/taskFlow');
+const ERR = require('../config/error');
 
 const url = '/users/:u_id/task_flow/';
 
@@ -22,9 +23,7 @@ router.post(url, function (req, res) {
         res.json({ msg: "插入成功", id: tf_id, tf: { ...tf, id:tf_id } });
     }).catch(function(err){
         console.log("插入新tf失败",err)
-        res.json({
-            msg:"插入失败"
-        })
+        res.json(ERR.TF_INSERT_FAILD);
     })
 })
 
@@ -44,9 +43,8 @@ router.put(url,function(req,res){
         })
     }).catch(function(err){
         console.log(err);
-        res.json({
-            errMsg: '更新失败'
-        })
+        res.json(ERR.TF_UPDATE_FAILD);
+       
     })
 });
 
@@ -63,9 +61,7 @@ router.get(url,function(req,res){
         });
     }).catch(function(err){
         console.log(err);
-        res.json({
-            msg:'获取失败'
-        })
+        res.json(ERR.TF_QUERY_FAILD);
     })
 })
 
@@ -89,7 +85,7 @@ router.delete(url,function(req,res){
         })
     }).catch(function(err){
         console.log(err);
-        return res.json({errMsg:"删除出现错误"})
+        return res.json(ERR.TF_DELETE_FAILD)
     })
 })
 module.exports = router;

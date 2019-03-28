@@ -7,6 +7,8 @@ const User = require('../modules/user');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const client = require('../redis');
+const ERR = require('../config/error');
+
 const options = {
     client:client,
     "host": "127.0.0.1",
@@ -54,7 +56,7 @@ router.post('/auth', (req, res) => {
 
             } else {
                 console.log('/auth 登录失败', error);
-                res.json("登陆失败")
+                res.json(ERR.USER_LOGIN_FAILD);
             }
         }
     } request(options, callback);
