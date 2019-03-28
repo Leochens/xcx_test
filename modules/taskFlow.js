@@ -63,7 +63,7 @@ taskFlow.deleteTaskFlow = function (u_id, tf_id) {
     })
 }
 /**
- * tf_id
+ * id
  * tf_name
  * tf_describe
  * is_completed

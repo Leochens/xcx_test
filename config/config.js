@@ -7,6 +7,7 @@ const DB = {
     multipleStatements: true
 }
 
+
 module.exports = {
-    DB
+    DB,
 }

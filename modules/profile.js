@@ -1,10 +1,6 @@
 const conn = require('./db');
 const genId = require('../utils/genId');
-
-function User(user) {
-    
-}
-
+const User = {};
 
 User.getUserInfoById = function (id, callback) {
     const sql = "SELECT * FROM user WHERE 'u_id' = ?";
@@ -24,22 +20,22 @@ User.getUserInfoById = function (id, callback) {
 User.insertUserByOpenId = function (openid) {
     return new Promise(function (resolve, reject) {
         User.getUserInfoByOpenId(openid).then(function (res) {
-                if (res.length === 0) { // 不存在用户 插入
-                    console.log(res);
-                    const u_id = genId.genUniqueUserId(openid);
-                    console.log('这边来了一个新人，大家一起欺负他,他的openid==>',openid);
-                    const sql = `insert into user(id,openid) values('${u_id}','${openid}');`
-                    conn.query(sql,function(err,res){
-                        if(err){
-                            return reject(err);
-                        }
-                        return resolve(u_id);
-                    });
-                }else{
-                    console.log("老用户登陆哦==>",openid);
-                    resolve(res[0].u_id);
-                }
+            if (res.length === 0) { // 不存在用户 插入
+                console.log(res);
+                const u_id = genId.genUniqueUserId(openid);
+                console.log('这边来了一个新人，大家一起欺负他,他的openid==>', openid);
+                const sql = `insert into user(id,openid) values('${u_id}','${openid}');`
+                conn.query(sql, function (err, res) {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(u_id);
+                });
+            } else {
+                console.log("老用户登陆哦==>", openid);
+                resolve(res[0].u_id);
             }
+        }
 
         ).catch(function (err) {
             reject(err);
@@ -69,7 +65,7 @@ User.getUserInfoByOpenId = function (openid) {
     // return u_id;
 }
 
-User.updateUserById = function (u_id,userInfo) {
+User.updateUserById = function (u_id, userInfo) {
     // 根据openid来更新用户的信息 然后返回用户的u_id
     console.log("前端用户已经确认得到userInfo了,准备根据发来的u_id和userInfo更新用户表表");
     const sql = `UPDATE user 
@@ -84,9 +80,9 @@ User.updateUserById = function (u_id,userInfo) {
         WHERE
         id = '${u_id}'
     `;
-    return new Promise(function(resolve,reject){
-        conn.query(sql,function(err,res){
-            if(err){console.log("更新失败");return reject(err)}
+    return new Promise(function (resolve, reject) {
+        conn.query(sql, function (err, res) {
+            if (err) { console.log("更新失败"); return reject(err) }
             console.log("更新成功");
             return resolve(true);
         });

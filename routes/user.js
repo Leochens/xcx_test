@@ -1,6 +1,10 @@
 const express = require('express')
 const router = express.Router();
 const checkSession = require('../utils/checkSession');
+/**
+ * 获得任务流的成员信息
+ */
+
 
 router.get('/users', function (req, res) {
     const SID = req.headers['cookie'];
