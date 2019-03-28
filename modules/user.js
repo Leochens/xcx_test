@@ -2,8 +2,7 @@ const conn = require('./db');
 const genId = require('../utils/genId');
 
 function User(user) {
-    this.nickName = user.nickName;
-    this.uid = user.uid;
+    
 }
 
 
@@ -29,7 +28,7 @@ User.insertUserByOpenId = function (openid) {
                     console.log(res);
                     const u_id = genId.genUniqueUserId(openid);
                     console.log('这边来了一个新人，大家一起欺负他,他的openid==>',openid);
-                    const sql = `insert into user(u_id,openid) values('${u_id}','${openid}');`
+                    const sql = `insert into user(id,openid) values('${u_id}','${openid}');`
                     conn.query(sql,function(err,res){
                         if(err){
                             return reject(err);
@@ -83,7 +82,7 @@ User.updateUserById = function (u_id,userInfo) {
         avatar_url='${userInfo.avatarUrl}',
         gender=${userInfo.gender}
         WHERE
-        u_id = '${u_id}'
+        id = '${u_id}'
     `;
     return new Promise(function(resolve,reject){
         conn.query(sql,function(err,res){

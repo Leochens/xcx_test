@@ -6,6 +6,8 @@ const jsonParser = bodyParser.json();
 
 const authRouter  = require('./routes/auth');
 const dataRouter = require('./routes/data');
+const taskFlowRouter = require('./routes/task_flow');
+const userRouter = require('./routes/user');
 const log = require('./utils/log');
 
 
@@ -19,8 +21,14 @@ const logPrint = function(req,res,next){
 };
 app.get('*',logPrint);
 app.post('*',logPrint);
+app.put('*',logPrint);
+app.delete('*',logPrint);
+
 app.use('/',authRouter);
 app.use('/',dataRouter);
+app.use('/',taskFlowRouter);
+app.use('/',userRouter);
+
 
 app.get('/', (req, res) => {  res.send('Hello World!') });
 

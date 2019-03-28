@@ -8,6 +8,16 @@ function genUniqueUserId(openid){
     return md5(openid+Date.parse(new Date())+Math.random()*10000);
 }
 
+
+/**
+ * 生成全局唯一的id
+ * 采用MD5加密 时间戳+随机数
+ */
+function genUniqueId(){
+    return md5(Date.parse(new Date())+Math.random()*10000);
+}
+
 module.exports = {
-    genUniqueUserId
+    genUniqueUserId,
+    genUniqueId
 }

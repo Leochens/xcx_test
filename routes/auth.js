@@ -84,8 +84,6 @@ router.put('/profile/:u_id', (req, res) => {
             errMsg:'更新用户profile失败'
         })
     })
-    // 这里是要更改用户的info
-    // User.openid
 })
 
 
