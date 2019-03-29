@@ -22,6 +22,7 @@
  * -----------------9 其他 ---------------
  * 90001    操作非法,须是leader
  * 90002    操作非法,须是管理员
+ * 90003    未知的请求地址
  */
 
 const ERR = {
@@ -76,6 +77,10 @@ const ERR = {
     REQUIRE_ADMIN: {
         errCode: 90002,
         errMsg: '操作非法,须是管理员'
+    },
+    UNKNOWN_REQUEST_URL:{
+        errCode: 90003,
+        errMsg:'未知的请求地址'
     }
 
 }
