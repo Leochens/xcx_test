@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router();
 const checkSession = require('../utils/checkSession');
 const ERR = require('../config/error');
-
+const User = require('../modules/user');
 
 router.put('/profile/:u_id', (req, res) => {
     // const u_id = req.body.id

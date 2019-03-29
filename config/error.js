@@ -23,6 +23,7 @@
  * 90001    操作非法,须是leader
  * 90002    操作非法,须是管理员
  * 90003    未知的请求地址
+ * 90004    缺少必要参数
  */
 
 const ERR = {
@@ -81,6 +82,10 @@ const ERR = {
     UNKNOWN_REQUEST_URL:{
         errCode: 90003,
         errMsg:'未知的请求地址'
+    },
+    MISSING_ARGUMENT:{
+        errCode: 90004,
+        errMsg: '缺少必要参数'
     }
 
 }

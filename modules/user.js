@@ -1,8 +1,8 @@
 const conn = require('./db');
 const genId = require('../utils/genId');
-
+const dbQuery = require('../utils/dbQuery');
 function User(user) {
-    
+
 }
 
 
@@ -17,6 +17,20 @@ User.getUserInfoById = function (id, callback) {
         callback(err, res);
     })
 }
+
+/**
+ * 根据tf_id来获得用户 也就是tf的成员
+ * 返回一个列表
+ */
+User.getUsersByTFId = function (tf_id) {
+    const sql = `SELECT * from user where id 
+                IN (
+                    SELECT u_id FROM user_taskflow WHERE tf_id = '${tf_id}'
+                )`;
+    return new Promise((resolve, reject) => {
+        dbQuery(sql).then(res =>resolve(res)).catch(err => reject(err))
+    })
+}
 /**
  * 如果用户存在 即可以查询到openid 那么就返回u_id
  * 不存在就插入一个用户 返回u_id
@@ -24,22 +38,22 @@ User.getUserInfoById = function (id, callback) {
 User.insertUserByOpenId = function (openid) {
     return new Promise(function (resolve, reject) {
         User.getUserInfoByOpenId(openid).then(function (res) {
-                if (res.length === 0) { // 不存在用户 插入
-                    console.log(res);
-                    const u_id = genId.genUniqueUserId(openid);
-                    console.log('这边来了一个新人，大家一起欺负他,他的openid==>',openid);
-                    const sql = `insert into user(id,openid) values('${u_id}','${openid}');`
-                    conn.query(sql,function(err,res){
-                        if(err){
-                            return reject(err);
-                        }
-                        return resolve(u_id);
-                    });
-                }else{
-                    console.log("老用户登陆哦==>",openid);
-                    resolve(res[0].u_id);
-                }
+            if (res.length === 0) { // 不存在用户 插入
+                console.log(res);
+                const u_id = genId.genUniqueUserId(openid);
+                console.log('这边来了一个新人，大家一起欺负他,他的openid==>', openid);
+                const sql = `insert into user(id,openid) values('${u_id}','${openid}');`
+                conn.query(sql, function (err, res) {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(u_id);
+                });
+            } else {
+                console.log("老用户登陆哦==>",openid);
+                resolve(res[0].id);
             }
+        }
 
         ).catch(function (err) {
             reject(err);
@@ -69,9 +83,9 @@ User.getUserInfoByOpenId = function (openid) {
     // return u_id;
 }
 
-User.updateUserById = function (u_id,userInfo) {
+User.updateUserById = function (u_id, userInfo) {
     // 根据openid来更新用户的信息 然后返回用户的u_id
-    console.log("前端用户已经确认得到userInfo了,准备根据发来的u_id和userInfo更新用户表表");
+    console.log("前端用户已经确认得到userInfo了,准备根据发来的u_id和userInfo更新用户表表",u_id,userInfo);
     const sql = `UPDATE user 
         SET
         nick_name= '${userInfo.nickName}',
@@ -84,13 +98,27 @@ User.updateUserById = function (u_id,userInfo) {
         WHERE
         id = '${u_id}'
     `;
-    return new Promise(function(resolve,reject){
-        conn.query(sql,function(err,res){
-            if(err){console.log("更新失败");return reject(err)}
+    return new Promise(function (resolve, reject) {
+        conn.query(sql, function (err, res) {
+            if (err) { console.log("更新失败"); return reject(err) }
             console.log("更新成功");
             return resolve(true);
         });
     });
 }
 
+
+
+User.checkRole = function (u_id, tf_id) {
+    const sql = `select role from user_taskflow where u_id = '${u_id}' and tf_id = '${tf_id}' limit 1 `;
+    return new Promise(function (resolve, reject) {
+        dbQuery(sql).then(function (role) {
+            console.log(role[0].role);
+            if (!role[0] || !role[0].role) {
+                return reject(false);
+            }
+            return resolve(true);
+        })
+    })
+}
 module.exports = User;

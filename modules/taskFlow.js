@@ -5,22 +5,14 @@ const taskFlow = {};
 taskFlow.getTaskFlowsByUserId = function (u_id) {
     const sql = `SELECT * from task_flow where id IN (
         SELECT tf_id FROM user_taskflow WHERE u_id = '${u_id}')`;
-    return new Promise(function (resolve, reject) {
-        dbQuery(sql).then(function (res) {
-            resolve(res);
-        }).catch(function (err) {
-            reject(err);
-        });
+    return new Promise((resolve, reject) => {
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err))
     })
 }
 taskFlow.getTaskFlowByTFId = function (tf_id) {
     const sql = `select * from task_flow where id = '${tf_id}'`;
-    return new Promise(function (resolve, reject) {
-        dbQuery(sql).then(function (res) {
-            resolve(res);
-        }).catch(function (err) {
-            reject(err);
-        });
+    return new Promise(resolve, reject => {
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
 }
 
@@ -29,8 +21,6 @@ taskFlow.getTaskFlowByTFId = function (tf_id) {
  * 要检测uid的role字段
  */
 taskFlow.updateTaskFlow = function (tf_id, tf) {
-
-    // code  ... 检测role字段
     const sql = `update task_flow set
         tf_name = '${tf.tf_name}',
         tf_describe = '${tf.tf_describe}',
@@ -39,12 +29,8 @@ taskFlow.updateTaskFlow = function (tf_id, tf) {
         begin_time = '${tf.begin_time}',
         end_time = '${tf.end_time}'
         where id = '${tf_id}'`
-    return new Promise(function (resolve, reject) {
-        dbQuery(sql).then(function (res) {
-            resolve(res);
-        }).catch(function (err) {
-            reject(err);
-        });
+    return new Promise((resolve, reject) => {
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
 }
 /**
@@ -103,6 +89,8 @@ taskFlow.addTaskFlow = function (u_id, tf) {
         });
     })
 }
+
+
 
 
 module.exports = taskFlow;
