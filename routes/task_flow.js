@@ -3,6 +3,7 @@ const router = express.Router();
 const checkSession = require('../utils/checkSession');
 const TaskFlow = require('../modules/taskFlow');
 const User = require('../modules/user');
+const Task = require('../modules/task');
 const ERR = require('../config/error');
 
 const url = '/users/:u_id/task_flow/';
@@ -10,7 +11,7 @@ const url = '/users/:u_id/task_flow/';
 
 
 // 在这里做判断
-router.delete(url,async function(req,res,next){
+router.delete(url, async function (req, res, next) {
     const u_id = req.params.u_id;
     const { tf_id } = req.body;
     let noAuth = false;
@@ -18,10 +19,10 @@ router.delete(url,async function(req,res,next){
         noAuth = true;
         return res.json(ERR.REQUIRE_LEADER);
     });
-    if(noAuth) return;
+    if (noAuth) return;
     next();
 })
-router.put(url,async function(req,res,next){
+router.put(url, async function (req, res, next) {
     const u_id = req.params.u_id;
     const { tf_id } = req.body;
     let noAuth = false;
@@ -29,7 +30,7 @@ router.put(url,async function(req,res,next){
         noAuth = true;
         return res.json(ERR.REQUIRE_LEADER);
     });
-    if(noAuth) return;
+    if (noAuth) return;
     next();
 })
 
@@ -59,7 +60,7 @@ router.put(url, async function (req, res) {
     const u_id = req.params.u_id;
     const { tf_id, tf } = req.body;
     //查询是否有操作权限
-    
+
     const _tf = JSON.parse(tf);
     TaskFlow.updateTaskFlow(tf_id, _tf).then(function (flag) {
         console.log(flag);
@@ -77,10 +78,20 @@ router.put(url, async function (req, res) {
 /**
  * 获取u_id对应的tfs
  * 返回一个tf组成的列表
+ * u_id :{
+ *      tf_id: {
+ *          t_id,
+ *          t_id,
+ *          t_id,
+ *          ...
+ *      },
+ *      ....
+ * }
  */
-router.get(url, function (req, res) {
+router.get(url, async function (req, res) {
     const u_id = req.params.u_id;
-    TaskFlow.getTaskFlowsByUserId(u_id).then(function (list) {
+    TaskFlow.getTaskFlowsByUserId(u_id).then( await function (list) {
+        console.log("getTaskFlowsByUserId=>", list);;
         res.json({
             msg: "获取成功",
             data: list

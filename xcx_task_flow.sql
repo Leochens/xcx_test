@@ -142,3 +142,7 @@ CREATE TABLE `user_taskflow` (
    FOREIGN KEY(u_id) REFERENCES user(id) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY(tf_id) REFERENCES task_flow(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- 表的结构 `user_taskflow`
+--
