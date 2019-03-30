@@ -1,8 +1,9 @@
 const conn = require('../modules/db');
 
-function dbQuery(sql){
+function dbQuery(sql,value){
+
     return new Promise(function(resovle,reject){
-        conn.query(sql,function(err,res){
+        conn.query(sql,[value],function(err,res){
             if(err){
                 return reject(err);
             }

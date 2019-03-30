@@ -14,8 +14,11 @@
  * 20005    查询tf失败
  * 
  * -----------------3 task相关 ---------------
- * 
- * 
+ * 30001    根据tf_id查询task失败
+ * 30002    根据t_id查询task失败
+ * 30003    新增task失败
+ * 30004    更新task失败
+ * 30005    删除task失败
  * 
  * 
  * 
@@ -47,8 +50,8 @@ const ERR = {
         errCode: 10005,
         errMsg: '获得用户数据失败'
     },
-    USER_AUTH_FAILD:{
-        errCode:10006,
+    USER_AUTH_FAILD: {
+        errCode: 10006,
         errMsg: '用户会话身份认证失败'
     },
 
@@ -70,6 +73,31 @@ const ERR = {
         errMsg: '查询tf失败'
     },
 
+    TASK_QUERY_BY_TF_ID_FAILD: {
+        errCode: 30001,
+        errMsg: '根据tf_id查询task失败'
+    },
+    TASK_QUERY_BY_T_ID_FAILD: {
+        errCode: 30002,
+        errMsg: '根据t_id查询task失败'
+    },
+    TASK_INSERT_FAILD: {
+        errCode: 30003,
+        errMsg: '新增task失败'
+    },
+    TASK_UPDATE_FAILD: {
+        errCode: 30004,
+        errMsg: '更新task失败'
+    },
+    TASK_DELETE_FAILD: {
+        errCode: 30005,
+        errMsg: '删除task失败'
+    },
+
+
+
+
+
 
     REQUIRE_LEADER: {
         errCode: 90001,
@@ -79,11 +107,11 @@ const ERR = {
         errCode: 90002,
         errMsg: '操作非法,须是管理员'
     },
-    UNKNOWN_REQUEST_URL:{
+    UNKNOWN_REQUEST_URL: {
         errCode: 90003,
-        errMsg:'未知的请求地址'
+        errMsg: '未知的请求地址'
     },
-    MISSING_ARGUMENT:{
+    MISSING_ARGUMENT: {
         errCode: 90004,
         errMsg: '缺少必要参数'
     }

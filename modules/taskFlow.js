@@ -14,12 +14,7 @@ taskFlow.getTaskFlowsByUserId = function (u_id) {
     const sql = `SELECT * from task_flow where id IN (
         SELECT tf_id FROM user_taskflow WHERE u_id = '${u_id}')`;
     return new Promise((resolve, reject) => {
-        dbQuery(sql).then(async tfs => {
-            for(const item of tfs){ // 只有这种方法可以阻塞的获得tasks
-                const tf_id = item.id;
-                item.tasks = await Task.getTasksByTfId(tf_id);
-            }
-            console.log('tfs=>',tfs);
+        dbQuery(sql).then(tfs => {
             resolve(tfs);
         }).catch(err => reject(err))
     })
@@ -55,7 +50,8 @@ taskFlow.updateTaskFlow = function (tf_id, tf) {
         category = '${tf.category}',
         begin_time = '${tf.begin_time}',
         end_time = '${tf.end_time}'
-        where id = '${tf_id}'`
+        where id = '${tf_id}',
+        leader_id = '${tf.leader_id}'`
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
@@ -103,7 +99,8 @@ taskFlow.addTaskFlow = function (u_id, tf) {
         ${tf.is_completed},
         '${tf.category}',
         '${tf.begin_time}',
-        '${tf.end_time}');
+        '${tf.end_time}',
+        '${tf.leader_id}');
         replace into user_taskflow values(
             '${u_id}',
             '${tf_id}',0,0
@@ -122,6 +119,7 @@ taskFlow.addMember = function (tf_id, u_id) {
     return new Promise((resolve, reject) =>
         dbQuery(sql).then(res => resolve(tf_id)).catch(err => reject(err)))
 }
+
 
 
 

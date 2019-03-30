@@ -6,7 +6,7 @@ const User = require('../modules/user');
 const Task = require('../modules/task');
 const ERR = require('../config/error');
 
-const url = '/users/:u_id/task_flow/';
+const url = '/users/:u_id/task_flows/';
 
 
 
@@ -88,10 +88,14 @@ router.put(url, async function (req, res) {
  *      ....
  * }
  */
-router.get(url, async function (req, res) {
+router.get(url, function (req, res) {
     const u_id = req.params.u_id;
-    TaskFlow.getTaskFlowsByUserId(u_id).then( await function (list) {
-        console.log("getTaskFlowsByUserId=>", list);;
+    TaskFlow.getTaskFlowsByUserId(u_id).then( async function (list) {
+        for(const item of list){ // 只有这种方法可以阻塞的获得tasks
+            const tf_id = item.id;
+            item.tasks = await Task.getTasksByTfId(tf_id);
+            item.members = await User.getUsersByTFId(tf_id);
+        }
         res.json({
             msg: "获取成功",
             data: list
