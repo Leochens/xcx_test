@@ -6,8 +6,8 @@ const User = require('../modules/user');
 /**
  * 获得任务流的成员信息
  */
-const tf_url = '/task_flows/:tf_id/user'; // 获得tf的所有人员
-const t_url = '/task/:t_id/user';   // 获得task的执行人员
+const tf_url = '/task_flows/:tf_id/users'; // tf人员操作
+const t_url = '/tasks/:t_id/users';   // task人员操作
 
 /**
  * 获得一个tf的的所有参与人员
