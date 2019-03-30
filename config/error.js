@@ -7,12 +7,14 @@
  * 10004    用户资料更新失败
  * 10005    获得用户数据失败
  * 10006    用户会话身份认证失败
+ * 10007    用户退出任务流失败
+ * 10008    获得tf所有成员失败
  * -----------------2 task_flow相关 ---------------
  * 20002    新增tf失败
  * 20003    更新tf失败
  * 20004    删除tf失败
  * 20005    查询tf失败
- * 
+ * 20006    邀请新成员失败
  * -----------------3 task相关 ---------------
  * 30001    根据tf_id查询task失败
  * 30002    根据t_id查询task失败
@@ -54,7 +56,14 @@ const ERR = {
         errCode: 10006,
         errMsg: '用户会话身份认证失败'
     },
-
+    USER_QUIT_TF_FAILD: {
+        errCode: 10007,
+        errMsg: '用户退出任务流失败'
+    },
+    GET_ALL_TF_USERS_FAILD:{
+        errCode: 10008,
+        errMsg: '获得tf所有成员失败'
+    },
 
     TF_INSERT_FAILD: {
         errCode: 20002,
@@ -72,6 +81,11 @@ const ERR = {
         errCode: 20005,
         errMsg: '查询tf失败'
     },
+    TF_INVITE_MEMBER_FAILD:{
+        errCode:20006,
+        errMsg: '邀请新成员失败'
+    },
+
 
     TASK_QUERY_BY_TF_ID_FAILD: {
         errCode: 30001,
