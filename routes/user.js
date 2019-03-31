@@ -3,12 +3,11 @@ const router = express.Router();
 const checkSession = require('../utils/checkSession');
 const ERR = require('../config/error');
 const User = require('../modules/user');
+const Task = require('../modules/task');
 /**
  * 获得任务流的成员信息
  */
 const tf_url = '/task_flows/:tf_id/users'; // tf人员操作
-const t_url = '/tasks/:t_id/users';   // task人员操作
-
 /**
  * 获得一个tf的的所有参与人员
  */
@@ -54,6 +53,53 @@ router.delete(tf_url,function(req,res){
     })
     
 })
+
+
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+const t_url = '/tasks/:t_id/users';   // task人员操作
+
+
+/**
+ * 获得一个task的人员
+ */
+router.get(t_url,function(req,res){
+    const t_id = req.params.t_id;
+    User.getUsersByTId(t_id).then(list=>{
+        console.log("获得task的任务人成功",list);
+        return res.json(list);
+    }).catch(err=>{
+        console.log(err);
+        res.json(ERR.GET_TASK_MEMBER_FAILD);
+    })
+})
+
+
+/**
+ * 为task添加负责人
+ * u_ids
+ */
+router.post(t_url,function(req,res){
+    const t_id = req.params.t_id;
+    const u_ids = JSON.parse(req.body.u_ids);
+    Task.addTaskMember(t_id,u_ids).then(flag=>{
+        console.log("添加task的任务人成功");
+        return res.json("添加task的任务人成功");
+    }).catch(err=>{
+        console.log(err);
+        res.json(ERR.ADD_TASK_MEMBER_FAILD);
+    })
+})
+
+/**
+ * 删除一个task的负责人
+ */
+router.delete(t_url,function(req,res){
+
+});
+
 router.get('/users', function (req, res) {
     const SID = req.headers['cookie'];
     console.log(SID);

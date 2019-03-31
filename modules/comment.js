@@ -20,9 +20,10 @@ comment.getCommentByTId = function (t_id) {
  */
 comment.addComment = function (cmt) {
     const c_id = genId.genUniqueId();
-    const sql = `replace into comments values(
+    const sql = `replace into comment values(
         '${c_id}',
         ${cmt.comment_type},
+        '${cmt.content}',
         '${cmt.create_time}',
         '${cmt.u_id}',
         '${cmt.t_id}')`;

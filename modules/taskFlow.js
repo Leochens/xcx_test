@@ -49,9 +49,9 @@ taskFlow.updateTaskFlow = function (tf_id, tf) {
         is_completed = ${tf.is_completed},
         category = '${tf.category}',
         begin_time = '${tf.begin_time}',
-        end_time = '${tf.end_time}'
-        where id = '${tf_id}',
-        leader_id = '${tf.leader_id}'`
+        end_time = '${tf.end_time}',
+        leader_id = '${tf.leader_id}'
+        where id = '${tf_id}'`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
@@ -88,7 +88,8 @@ const t = {
     "is_completed": false,
     "category": "测试",
     "begin_time": "2019-01-01 00:00:01",
-    "end_time": "2019-12-01 00:00:01"
+    "end_time": "2019-12-01 00:00:01",
+    "leader_id":"9e7282ab5735accd25cbd99c53264885"
 }
 taskFlow.addTaskFlow = function (u_id, tf) {
     const tf_id = genId.genUniqueId();
@@ -103,7 +104,7 @@ taskFlow.addTaskFlow = function (u_id, tf) {
         '${tf.leader_id}');
         replace into user_taskflow values(
             '${u_id}',
-            '${tf_id}',0,0
+            '${tf_id}',1,0
         )`;
     return new Promise((resolve, reject) =>
         dbQuery(sql).then(res => resolve(tf_id)).catch(err => reject(err)))

@@ -21,8 +21,10 @@ router.get(url,function(req,res){
  * 为指定task增加一条评论
  */
 router.post(url,function(req,res){
-    const cmt = req.body.cmt;
+    const cmt = JSON.parse(req.body.cmt);
+    
     if(!cmt) {return res.json(ERR.MISSING_ARGUMENT)}
+    console.log("post==>",cmt);
 
     Comment.addComment(cmt).then(c_id=>res.json({
         ...cmt,

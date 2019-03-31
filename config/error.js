@@ -21,6 +21,8 @@
  * 30003    新增task失败
  * 30004    更新task失败
  * 30005    删除task失败
+ * 30006    获取task任务人失败
+ * 30007    添加task任务人失败
  * 
  * -----------------4 comment相关 ---------------
  * 40001    评论失败
@@ -63,7 +65,7 @@ const ERR = {
         errCode: 10007,
         errMsg: '用户退出任务流失败'
     },
-    GET_ALL_TF_USERS_FAILD:{
+    GET_ALL_TF_USERS_FAILD: {
         errCode: 10008,
         errMsg: '获得tf所有成员失败'
     },
@@ -84,8 +86,8 @@ const ERR = {
         errCode: 20005,
         errMsg: '查询tf失败'
     },
-    TF_INVITE_MEMBER_FAILD:{
-        errCode:20006,
+    TF_INVITE_MEMBER_FAILD: {
+        errCode: 20006,
         errMsg: '邀请新成员失败'
     },
 
@@ -110,8 +112,20 @@ const ERR = {
         errCode: 30005,
         errMsg: '删除task失败'
     },
+    GET_TASK_MEMBER_FAILD: {
+        errCode: 30006,
+        errMsg: '获取task任务人失败'
+    },
+    ADD_TASK_MEMBER_FAILD: {
+        errCode: 30007,
+        errMsg: '添加task任务人失败'
+    },
 
-    COMMENT_FAILD:{
+
+
+
+
+    COMMENT_FAILD: {
         errCode: 40001,
         errMsg: '评论失败'
     },
@@ -136,7 +150,7 @@ const ERR = {
         errCode: 90004,
         errMsg: '缺少必要参数'
     },
-    GET_DATA_FAILD:{
+    GET_DATA_FAILD: {
         errCode: 90005,
         errMsg: '获得数据失败'
     }

@@ -42,7 +42,7 @@ task.addTask = function (tf_id, task) {
         '${task.t_name}',
         '${task.begin_time}',
         '${task.end_time}',
-        ${task.is_completed}
+        ${task.is_completed},
         '${tf_id}',
         ${task.is_important})`;
 
@@ -74,8 +74,8 @@ task.updateTask = function(t_id,task){
         '${task.t_name}',
         '${task.begin_time}',
         '${task.end_time}',
-        ${task.is_completed}
-        '${tf_id}',
+        ${task.is_completed},
+        '${task.tf_id}',
         ${task.is_important})`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));

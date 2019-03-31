@@ -82,10 +82,11 @@ User.checkRole = function (u_id, tf_id) {
     const sql = `select role from user_taskflow where u_id = '${u_id}' and tf_id = '${tf_id}' limit 1 `;
     return new Promise(function (resolve, reject) {
         dbQuery(sql).then(function (role) {
-            console.log(role[0].role);
-            if (!role[0] || !role[0].role) {
+            console.log('当前操作者身份=>',role);
+            if (!role||!role[0] || !role[0].role) {
                 return reject(false);
             }
+            console.log(role[0].role);
             return resolve(true);
         })
     })
@@ -99,9 +100,9 @@ User.checkRole = function (u_id, tf_id) {
  * 返回一个列表
  */
 User.getUsersByTFId = function (tf_id) {
-    // const sql = `SELECT * from user where id IN (
-    //                 SELECT u_id FROM user_taskflow WHERE tf_id = '${tf_id}')`;
-    const sql = `SELECT * FROM user,user_taskflow where tf_id = '${tf_id}'`;
+    const sql = `SELECT * from user where id IN (
+                    SELECT u_id FROM user_taskflow WHERE tf_id = '${tf_id}')`;
+    // const sql = `SELECT * FROM user,user_taskflow where tf_id = '${tf_id}'`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err))
     })
@@ -111,7 +112,7 @@ User.getUsersByTFId = function (tf_id) {
  * 返回一个列表
  */
 User.getUsersByTId = function (t_id) {
-    const sql = `select * from user where user where id in (
+    const sql = `select * from user where id in (
         select u_id from user_task where t_id = '${t_id}')`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err))
