@@ -97,8 +97,8 @@ taskFlow.addTaskFlow = function (u_id, tf) {
         '${tf_id}',
         '${tf.tf_name}',
         '${tf.tf_describe}',
-        ${tf.is_completed},
-        '${tf.category}',
+        ${tf.is_completed||false},
+        '${tf.category||"默认"}',
         '${tf.begin_time}',
         '${tf.end_time}',
         '${tf.leader_id}');

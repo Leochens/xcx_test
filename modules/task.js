@@ -40,6 +40,7 @@ task.addTask = function (tf_id, task) {
     const sql = `replace into task values (
         '${t_id}',
         '${task.t_name}',
+        '${task.t_describe}',
         '${task.begin_time}',
         '${task.end_time}',
         ${task.is_completed},
@@ -72,6 +73,7 @@ task.updateTask = function(t_id,task){
     const sql = `replace into task values (
         '${t_id}',
         '${task.t_name}',
+        '${task.t_describe}',
         '${task.begin_time}',
         '${task.end_time}',
         ${task.is_completed},
