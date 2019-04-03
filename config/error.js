@@ -23,6 +23,7 @@
  * 30005    删除task失败
  * 30006    获取task任务人失败
  * 30007    添加task任务人失败
+ * 30008    获得任务人状态失败
  * 
  * -----------------4 comment相关 ---------------
  * 40001    评论失败
@@ -119,6 +120,10 @@ const ERR = {
     ADD_TASK_MEMBER_FAILD: {
         errCode: 30007,
         errMsg: '添加task任务人失败'
+    },
+    GET_TASK_MEMBER_STATUS_FAILD: {
+        errCode: 30008,
+        errMsg: '获得任务人状态失败'
     },
 
 

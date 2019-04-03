@@ -4,6 +4,7 @@ const checkSession = require('../utils/checkSession');
 const TaskFlow = require('../modules/taskFlow');
 const User = require('../modules/user');
 const Task = require('../modules/task');
+const Comment = require('../modules/comment');
 const ERR = require('../config/error');
 
 const url = '/users/:u_id/task_flows/';
@@ -97,6 +98,7 @@ router.get(url, function (req, res) {
             for(let t of item.tasks){
                 const t_id = t.id;
                 t.members = await User.getUsersByTId(t_id);
+                t.comments = await Comment.getCommentByTId(t_id);
             }
             item.members = await User.getUsersByTFId(tf_id);
         }

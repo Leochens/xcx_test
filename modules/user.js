@@ -38,6 +38,37 @@ User.getUserInfoById = function (u_id) {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err))
     })
 }
+/**
+ * 获得一组人在单个子任务中的状态 是请假还是正常
+ * t_id 
+ * u_ids 一组人的id
+ * 返回一个列表 里面是
+ * [
+ *  {
+ *      u_id,
+ *      t_id,
+ *      status,
+ *      break_reason,
+ *      refuse_reason
+ *  },
+ *  ...
+ * ]
+ */
+User.getMemberStatusInTaskByIds = function (t_id, u_ids) {
+
+    let uidsStr = "";
+    u_ids.forEach((u_id, index) => {
+        if (index === u_ids.length - 1)
+            uidsStr += `'${u_id}'`;
+        else
+            uidsStr += `'${u_id}',`
+    });
+
+    const sql = `select * from user_task where t_id = '${t_id}' and u_id in (${uidsStr})`;
+    return new Promise(function (resolve, reject) {
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err))
+    });
+}
 
 /**
  * 以openid为键来获得用户信息
@@ -82,8 +113,8 @@ User.checkRole = function (u_id, tf_id) {
     const sql = `select role from user_taskflow where u_id = '${u_id}' and tf_id = '${tf_id}' limit 1 `;
     return new Promise(function (resolve, reject) {
         dbQuery(sql).then(function (role) {
-            console.log('当前操作者身份=>',role);
-            if (!role||!role[0] || !role[0].role) {
+            console.log('当前操作者身份=>', role);
+            if (!role || !role[0] || !role[0].role) {
                 return reject(false);
             }
             console.log(role[0].role);
@@ -124,7 +155,7 @@ User.getUsersByTId = function (t_id) {
  * 删除一个tf中的某个成员
  * 几种不能退出的情况
  */
-User.deleteUserInTaskFlow = function(tf_id,u_id){
+User.deleteUserInTaskFlow = function (tf_id, u_id) {
     const sql = `delete from user_taskflow where tf_id = '${tf_id}' and u_id = '${u_id}'`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err))
@@ -135,7 +166,7 @@ User.deleteUserInTaskFlow = function(tf_id,u_id){
 /**
  * 向TF中添加一个新成员
  */
-User.addTFMember = function(tf_id,u_id){
+User.addTFMember = function (tf_id, u_id) {
     const sql = `replace into user_taskflow values('${u_id}','${tf_id}',0,0)`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err))
