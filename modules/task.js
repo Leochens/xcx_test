@@ -39,13 +39,13 @@ task.addTask = function (tf_id, task) {
     const t_id = genId.genUniqueId();
     const sql = `replace into task values (
         '${t_id}',
-        '${task.t_name}',
-        '${task.t_describe}',
+        '${task.t_name||"无标题"}',
+        '${task.t_describe||"无描述"}',
         '${task.begin_time}',
         '${task.end_time}',
-        ${task.is_completed},
+        ${task.is_completed||0},
         '${tf_id}',
-        ${task.is_important})`;
+        ${task.is_important||0})`;
 
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(t_id)).catch(err => reject(err));
