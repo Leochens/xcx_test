@@ -41,7 +41,7 @@ task.addTask = function (tf_id, task) {
         '${t_id}',
         '${task.t_name||"无标题"}',
         '${task.t_describe||"无描述"}',
-        '${task.begin_time}',
+        '${task.begin_time}', 
         '${task.end_time}',
         ${task.is_completed||0},
         '${tf_id}',
