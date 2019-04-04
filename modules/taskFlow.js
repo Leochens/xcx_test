@@ -12,7 +12,7 @@ const taskFlow = {};
  */
 taskFlow.getTaskFlowsByUserId = function (u_id) {
     const sql = `SELECT * from task_flow where id IN (
-        SELECT tf_id FROM user_taskflow WHERE u_id = '${u_id}')`;
+        SELECT tf_id FROM user_taskflow WHERE u_id = '${u_id}') order by begin_time DESC`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(tfs => {
             resolve(tfs);
