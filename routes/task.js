@@ -41,7 +41,10 @@ router.get(url, function (req, res) {
             const t_id = task.id;
             task.members = await User.getUsersByTId(t_id);
         }
-        return res.json(list)
+        return res.json({
+            msg: "获取成功",
+            data: list
+        })
     }).catch(err => {
         console.log(err);
         return res.json(ERR.TASK_QUERY_BY_TF_ID_FAILD);
@@ -93,7 +96,7 @@ router.post(url, function (req, res) {
                 data: {
                     ...t,
                     id: t_id,
-                    members:[]
+                    members: []
                 }
             })
         }
