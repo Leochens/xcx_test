@@ -99,8 +99,10 @@ router.get(url, function (req, res) {
                 const t_id = t.id;
                 t.members = await User.getUsersByTId(t_id);
                 t.comments = await Comment.getCommentByTId(t_id);
+                t.status_map = await Task.getStatusMapByTId(t_id);
             }
             item.members = await User.getUsersByTFId(tf_id);
+            // item.status_map = await 
         }
         res.json({
             msg: "获取成功",

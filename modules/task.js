@@ -26,7 +26,15 @@ task.getTaskById = function (t_id) {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
 }
-
+/**
+ * 获得t_id所代表的子任务的人员状态映射表map
+ */
+task.getStatusMapByTId = function(t_id){
+    const sql = `select * from user_task where t_id = '${t_id}'`;
+    return new Promise((resolve, reject) => {
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
+    })
+}
 /**
  * 向tf中增加子任务
  * 返回子任务的id

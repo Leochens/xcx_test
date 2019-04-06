@@ -18,8 +18,9 @@ router.get(tf_url, function (req, res) {
         console.log(err);
         return res.json(ERR.GET_ALL_TF_USERS_FAILD);
     })
-
 });
+
+
 /**
  * 向一个tf中添加一个新的人员
  * 用户邀请微信好友的接口 
