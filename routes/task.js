@@ -72,12 +72,16 @@ router.post(url, function (req, res) {
     const task = JSON.parse(req.body.task);
     const tf_id = req.params.tf_id;
     if (!task) return res.json(ERR.MISSING_ARGUMENT);
+    const status_map = task.members.map(mem=>{
+        
+    })
     const t = {
         ...task,
         comments: [],
         is_completed: 0,
         is_important: 0,
-        tf_id
+        tf_id,
+        // status_map:
     }
     Task.addTask(tf_id, task).then(t_id => {
         if (Array.isArray(task.members) && task.members.length > 0) { //

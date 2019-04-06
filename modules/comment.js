@@ -6,7 +6,7 @@ const comment = {};
  */
 
 comment.getCommentByTId = function (t_id) {
-    const sql = `select * from comment where t_id = '${t_id}'`;
+    const sql = `select * from comment where t_id = '${t_id}' order by create_time`;
 
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
@@ -20,6 +20,7 @@ comment.getCommentByTId = function (t_id) {
  */
 comment.addComment = function (cmt) {
     const c_id = genId.genUniqueId();
+
     const sql = `replace into comment values(
         '${c_id}',
         ${cmt.comment_type},
