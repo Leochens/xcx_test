@@ -3,6 +3,7 @@ const router = express.Router();
 const ERR = require('../config/error');
 const checkSession = require('../utils/checkSession');
 const Task = require('../modules/task');
+const Comment = require('../modules/comment');
 const User = require('../modules/user');
 const url = '/task_flows/:tf_id/tasks';
 
@@ -40,6 +41,8 @@ router.get(url, function (req, res) {
         for (let task of list) {
             const t_id = task.id;
             task.members = await User.getUsersByTId(t_id);
+            task.comments = await Comment.getCommentByTId(t_id);
+            task.status_map = await Task.getStatusMapByTId(t_id);
         }
         return res.json({
             msg: "获取成功",
