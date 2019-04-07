@@ -28,7 +28,7 @@ comment.addComment = function (cmt) {
         '${cmt.create_time}',
         '${cmt.u_id}',
         '${cmt.t_id}')`;
-
+        
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(c_id)).catch(err => reject(err));
     })
