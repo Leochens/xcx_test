@@ -11,8 +11,20 @@ const taskFlow = {};
  * 返回一个列表
  */
 taskFlow.getTaskFlowsByUserId = function (u_id) {
-    const sql = `SELECT * from task_flow where id IN (
-        SELECT tf_id FROM user_taskflow WHERE u_id = '${u_id}') order by begin_time DESC`;
+    const sql = `
+        SELECT 
+            category,
+            id,
+            tf_name,
+            tf_describe,
+            is_completed,
+            begin_time,
+            end_time,
+            leader_id
+        from user_taskflow JOIN task_flow ON task_flow.id = user_taskflow.tf_id 
+        WHERE user_taskflow.u_id = '${u_id}' 
+        order by begin_time DESC;
+    `;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(tfs => {
             resolve(tfs);
