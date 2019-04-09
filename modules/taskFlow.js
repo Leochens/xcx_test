@@ -59,7 +59,6 @@ taskFlow.updateTaskFlow = function (tf_id, tf) {
         tf_name = '${tf.tf_name}',
         tf_describe = '${tf.tf_describe}',
         is_completed = ${tf.is_completed||0},
-        category = '${tf.category||"默认"}',
         begin_time = '${tf.begin_time}',
         end_time = '${tf.end_time}',
         leader_id = '${tf.leader_id}'
@@ -98,7 +97,6 @@ const t = {
     "tf_name": "啦啦测试流",
     "tf_describe": "人家就是做测试的嘛",
     "is_completed": false,
-    "category": "测试",
     "begin_time": "2019-01-01 00:00:01",
     "end_time": "2019-12-01 00:00:01",
     "leader_id":"9e7282ab5735accd25cbd99c53264885"
@@ -110,7 +108,6 @@ taskFlow.addTaskFlow = function (u_id, tf) {
         '${tf.tf_name}',
         '${tf.tf_describe}',
         ${tf.is_completed||false},
-        '${tf.category||"默认"}',
         '${tf.begin_time}',
         '${tf.end_time}',
         '${tf.leader_id}');
