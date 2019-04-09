@@ -113,7 +113,7 @@ taskFlow.addTaskFlow = function (u_id, tf) {
         '${tf.leader_id}');
         replace into user_taskflow values(
             '${u_id}',
-            '${tf_id}',1,0
+            '${tf_id}',1,'默认分类'
         )`;
     return new Promise((resolve, reject) =>
         dbQuery(sql).then(res => resolve(tf_id)).catch(err => reject(err)))
@@ -125,7 +125,7 @@ taskFlow.addTaskFlow = function (u_id, tf) {
  * 返回tf_id
  */
 taskFlow.addMember = function (tf_id, u_id) {
-    const sql = `insert into user_taskflow values('${u_id}','${tf_id}',0,0)`;
+    const sql = `insert into user_taskflow values('${u_id}','${tf_id}',0,'默认分类')`;
     return new Promise((resolve, reject) =>
         dbQuery(sql).then(res => resolve(tf_id)).catch(err => reject(err)))
 }
