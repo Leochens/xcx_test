@@ -6,6 +6,7 @@ const User = require('../modules/user');
 const Task = require('../modules/task');
 const Comment = require('../modules/comment');
 const ERR = require('../config/error');
+const messageControl = require('../modules/messageControl');
 
 const url = '/users/:u_id/task_flows/';
 
@@ -46,6 +47,9 @@ router.post(url, function (req, res) {
     const u_id = req.params.u_id;
     console.log('tf=>', tf, ' u_id=>', u_id);
     TaskFlow.addTaskFlow(u_id, tf).then(function (tf_id) {
+        
+        messageControl.createNewTaskFlow(tf,u_id); // 添加一条消息
+
         res.json({ msg: "插入成功", id: tf_id, tf: { ...tf, id: tf_id } });
     }).catch(function (err) {
         console.log("插入新tf失败", err)

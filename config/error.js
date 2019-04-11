@@ -28,7 +28,10 @@
  * -----------------4 comment相关 ---------------
  * 40001    评论失败
  * 
- * 
+ * -----------------4 message相关 ---------------
+ * 50001    拉取消息失败
+ * 50002    添加新消息失败
+ * 50003    消息设为已读失败
  * -----------------9 其他 ---------------
  * 90001    操作非法,须是leader
  * 90002    操作非法,须是管理员
@@ -133,6 +136,21 @@ const ERR = {
     COMMENT_FAILD: {
         errCode: 40001,
         errMsg: '评论失败'
+    },
+
+
+
+    GET_MESSAGE_FAILD: {
+        errCode: 50001,
+        errMsg: '拉取消息失败'
+    },
+    ADD_NEW_MESSAGE_FAILD: {
+        errCode: 50002,
+        errMsg: '添加新消息失败'
+    },
+    SET_MESSAGE_READ_FAULD: {
+        errCode: 50003,
+        errMsg: '消息设为已读失败'
     },
 
 

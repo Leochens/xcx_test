@@ -6,7 +6,7 @@ const Task = require('../modules/task');
 const Comment = require('../modules/comment');
 const User = require('../modules/user');
 const url = '/task_flows/:tf_id/tasks';
-
+const messageControl = require('../modules/messageControl');
 
 // 在这里做判断
 router.delete(url, async function (req, res, next) {
@@ -85,7 +85,9 @@ router.post(url, function (req, res) {
     }
     Task.addTask(tf_id, task).then(t_id => {
         if (Array.isArray(task.members) && task.members.length > 0) { //
-            Task.addTaskMember(t_id, task.members.map(m => m.id)).then(flag => {
+            const u_ids = task.members.map(m => m.id);
+            messageControl.createNewTask(t_id,u_ids);
+            Task.addTaskMember(t_id, u_ids).then(flag => {
                 res.json({
                     msg: "插入新任务成功 插入任务人成功",
                     data: {

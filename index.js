@@ -15,6 +15,7 @@ const task = require('./routes/task');
 const user = require('./routes/user');
 const comment = require('./routes/comment');
 const image = require('./routes/image');
+const message = require('./routes/message');
 
 const log = require('./utils/log');
 app.all('*',log);
@@ -26,6 +27,7 @@ app.use('/',task);
 app.use('/',user);
 app.use('/',comment);
 app.use('/',image);
+app.use('/',message);
 
 
 app.get('/', (req, res) => {  res.send('Hello World!') });

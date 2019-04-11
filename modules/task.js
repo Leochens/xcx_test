@@ -41,9 +41,6 @@ task.getStatusMapByTId = function(t_id){
  */
 task.addTask = function (tf_id, task) {
     const member = task.member;
-    if (member) {
-        // 添加进user_task映射表
-    }
     const t_id = genId.genUniqueId();
     const sql = `replace into task values (
         '${t_id}',

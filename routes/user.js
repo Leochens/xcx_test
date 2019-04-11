@@ -4,6 +4,10 @@ const checkSession = require('../utils/checkSession');
 const ERR = require('../config/error');
 const User = require('../modules/user');
 const Task = require('../modules/task');
+const TaskFlow = require('../modules/taskFlow');
+const Message = require('../modules/message');
+const formatTime = require('../utils/formatTime');
+const messageControl = require('../modules/messageControl');
 /**
  * 获得任务流的成员信息
  */
@@ -105,6 +109,7 @@ router.post(t_url + '/status', function (req, res) {
 router.post(t_url, function (req, res) {
     const t_id = req.params.t_id;
     const u_ids = JSON.parse(req.body.u_ids);
+    messageControl.createNewTask(t_id,u_ids);
     Task.addTaskMember(t_id, u_ids).then(flag => {
         console.log("添加task的任务人成功");
         return res.json("添加task的任务人成功");
