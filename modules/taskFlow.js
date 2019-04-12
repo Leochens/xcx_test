@@ -40,11 +40,11 @@ taskFlow.getTaskFlowByTFId = function (tf_id) {
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(tf => {
             // 从获得的tf中拿出id获取tf_id对应的task
-            const tf_id =  tf.id;
-            Task.getTasksByTfId(tf_id).then(tasks=>{
+            const tf_id = tf.id;
+            Task.getTasksByTfId(tf_id).then(tasks => {
                 tf.tasks = tasks;
                 return resolve(tf);
-            }).catch(err=>reject(err));
+            }).catch(err => reject(err));
             // resolve(res)
         }).catch(err => reject(err));
     })
@@ -58,11 +58,19 @@ taskFlow.updateTaskFlow = function (tf_id, tf) {
     const sql = `update task_flow set
         tf_name = '${tf.tf_name}',
         tf_describe = '${tf.tf_describe}',
-        is_completed = ${tf.is_completed||0},
+        is_completed = ${tf.is_completed || 0},
         begin_time = '${tf.begin_time}',
         end_time = '${tf.end_time}',
         leader_id = '${tf.leader_id}'
         where id = '${tf_id}'`;
+    return new Promise((resolve, reject) => {
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
+    })
+}
+
+taskFlow.updateTaskFlowCategory = function (u_id,tf_id,category) {
+    const sql = `update user_taskflow set category = '${category || '默认分类'}'
+    where u_id = ${u_id} and tf_id = '${tf_id}'`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
@@ -92,14 +100,14 @@ taskFlow.deleteTaskFlow = function (u_id, tf_id) {
 /**
  * 插入到指定用户的一条tf 并返回它的tf_id
  */
-const t = { 
+const t = {
     "id": "12222",
     "tf_name": "啦啦测试流",
     "tf_describe": "人家就是做测试的嘛",
     "is_completed": false,
     "begin_time": "2019-01-01 00:00:01",
     "end_time": "2019-12-01 00:00:01",
-    "leader_id":"9e7282ab5735accd25cbd99c53264885"
+    "leader_id": "9e7282ab5735accd25cbd99c53264885"
 }
 taskFlow.addTaskFlow = function (u_id, tf) {
     const tf_id = genId.genUniqueId();
@@ -107,13 +115,15 @@ taskFlow.addTaskFlow = function (u_id, tf) {
         '${tf_id}',
         '${tf.tf_name}',
         '${tf.tf_describe}',
-        ${tf.is_completed||false},
+        ${tf.is_completed || false},
         '${tf.begin_time}',
         '${tf.end_time}',
         '${tf.leader_id}');
         replace into user_taskflow values(
             '${u_id}',
-            '${tf_id}',1,'默认分类'
+            '${tf_id}',
+            1,
+            '${tf.category || '默认分类'}'
         )`;
     return new Promise((resolve, reject) =>
         dbQuery(sql).then(res => resolve(tf_id)).catch(err => reject(err)))

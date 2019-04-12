@@ -34,6 +34,7 @@ router.post(tf_url, function (req, res) {
     const u_id = req.body.u_id;
     const tf_id = req.params.tf_id;
     if (!u_id) { return res.json(ERR.MISSING_ARGUMENT) }
+    messageControl.joinInNewTaskFlow(tf_id,u_id);
     User.addTFMember(tf_id, u_id).then(flag => res.json(flag)).catch(err => {
         console.log(err);
         return res.json(ERR.TF_INVITE_MEMBER_FAILD);

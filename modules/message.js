@@ -54,7 +54,18 @@ message.setMessageRead = function (m_ids) {
         m_ids_str += `'${m_id}'`;
         if (index != m_ids.length) m_ids_str += ',';
     });
-    const sql = `update messages set is_read = 1 where id in (${m_ids_str})`;
+    const sql = `update message set is_read = 1 where id in (${m_ids_str})`;
+    return new Promise((resolve, reject) => {
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
+    })
+
+}
+/**
+ * 将某个用户消息全部置为已读
+ */
+message.setMessageReadByUid = function (u_id) {
+    const sql = `update message set is_read = 1 where to_user_id = '${u_id}'`;
+
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })

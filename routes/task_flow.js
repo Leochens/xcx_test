@@ -47,7 +47,7 @@ router.post(url, function (req, res) {
     const u_id = req.params.u_id;
     console.log('tf=>', tf, ' u_id=>', u_id);
     TaskFlow.addTaskFlow(u_id, tf).then(function (tf_id) {
-        
+
         messageControl.createNewTaskFlow(tf,u_id); // 添加一条消息
 
         res.json({ msg: "插入成功", id: tf_id, tf: { ...tf, id: tf_id } });
@@ -69,10 +69,13 @@ router.put(url, async function (req, res) {
     const _tf = JSON.parse(tf);
     TaskFlow.updateTaskFlow(tf_id, _tf).then(function (flag) {
         console.log(flag);
-        res.json({
-            errMsg: '更新成功',
-            tf: _tf
-        })
+        try{
+            TaskFlow.updateTaskFlowCategory(u_id,tf_id,_tf.category);
+            res.json({
+                errMsg: '更新成功',
+                tf: _tf
+            })
+        }catch(e){throw e}
     }).catch(function (err) {
         console.log(err);
         res.json(ERR.TF_UPDATE_FAILD);
