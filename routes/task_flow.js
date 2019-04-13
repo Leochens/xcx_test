@@ -48,7 +48,7 @@ router.post(url, function (req, res) {
     console.log('tf=>', tf, ' u_id=>', u_id);
     TaskFlow.addTaskFlow(u_id, tf).then(function (tf_id) {
 
-        messageControl.createNewTaskFlow(tf,u_id); // 添加一条消息
+        messageControl.createNewTaskFlow(tf, u_id); // 添加一条消息
 
         res.json({ msg: "插入成功", id: tf_id, tf: { ...tf, id: tf_id } });
     }).catch(function (err) {
@@ -66,21 +66,29 @@ router.put(url, async function (req, res) {
     const { tf_id, tf } = req.body;
     //查询是否有操作权限
 
-    const _tf = JSON.parse(tf);
-    TaskFlow.updateTaskFlow(tf_id, _tf).then(function (flag) {
-        console.log(flag);
-        try{
-            TaskFlow.updateTaskFlowCategory(u_id,tf_id,_tf.category);
-            res.json({
-                errMsg: '更新成功',
-                tf: _tf
-            })
-        }catch(e){throw e}
-    }).catch(function (err) {
-        console.log(err);
-        res.json(ERR.TF_UPDATE_FAILD);
 
-    })
+    const newTf = JSON.parse(tf);
+
+    TaskFlow.getTaskFlowByTFId(tf_id).then(([oldTf]) => {
+        console.log(oldTf);
+        TaskFlow.updateTaskFlow(tf_id, newTf).then(function (flag) {
+            try {
+                TaskFlow.updateTaskFlowCategory(u_id, tf_id, newTf.category);
+                messageControl.taskFlowChange(tf_id, oldTf, newTf);
+                res.json({
+                    errMsg: '更新成功',
+                    tf: newTf
+                })
+            } catch (e) { console.log(e) }
+        }).catch(function (err) {
+            console.log(err);
+        })
+
+    }).catch(e => {
+        console.log(e);
+        res.json(ERR.TF_UPDATE_FAILD);
+    });
+
 });
 
 /**
@@ -98,11 +106,11 @@ router.put(url, async function (req, res) {
  */
 router.get(url, function (req, res) {
     const u_id = req.params.u_id;
-    TaskFlow.getTaskFlowsByUserId(u_id).then( async function (list) {
-        for(const item of list){ // 只有这种方法可以阻塞的获得tasks
+    TaskFlow.getTaskFlowsByUserId(u_id).then(async function (list) {
+        for (const item of list) { // 只有这种方法可以阻塞的获得tasks
             const tf_id = item.id;
             item.tasks = await Task.getTasksByTfId(tf_id);
-            for(let t of item.tasks){
+            for (let t of item.tasks) {
                 const t_id = t.id;
                 t.members = await User.getUsersByTId(t_id);
                 t.comments = await Comment.getCommentByTId(t_id);
