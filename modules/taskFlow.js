@@ -43,6 +43,7 @@ taskFlow.getTaskFlowByTFId = function (tf_id) {
             const tf_id = tf.id;
             Task.getTasksByTfId(tf_id).then(tasks => {
                 tf.tasks = tasks;
+                console.log("in getTaskFlowByTFId tf = ",tf);
                 return resolve(tf);
             }).catch(err => reject(err));
             // resolve(res)
@@ -62,7 +63,13 @@ taskFlow.updateTaskFlow = function (tf_id, tf) {
         begin_time = '${tf.begin_time}',
         end_time = '${tf.end_time}',
         leader_id = '${tf.leader_id}'
-        where id = '${tf_id}'`;
+        where id = '${tf_id}';
+        replace into user_taskflow values(
+            '${tf.leader_id}',
+            '${tf_id}',
+            1,
+            '${tf.category || '默认分类'}'
+        )`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
@@ -75,6 +82,7 @@ taskFlow.updateTaskFlowCategory = function (u_id,tf_id,category) {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
 }
+
 /**
  * 更新tf的信息 只能leader来操作  字段更新
  * 要检测uid的role字段

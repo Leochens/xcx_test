@@ -23,22 +23,22 @@ const addMultiple = function (msg,u_ids) {
 }
 // 负责人创建了一个新的任务流
 function createNewTaskFlow(tf,u_id) {
-
     const msg = {
         content: `您创建了任务流${tf.tf_name}`,
         to_user_id: u_id
     }
-
     add(msg);
 }
 
 // 成员新加入一个任务流
 function joinInNewTaskFlow(tf_id,u_id) {
     TaskFlow.getTaskFlowByTFId(tf_id).then(tf => {
+        console.log("in joinInNewTaskFlow tf = ",tf)
         const msg = {
             content: `您新加入了任务流${tf.tf_name}`,
             to_user_id: u_id
         }
+
         add(msg);
     }).catch(err => {
         console.log("查询指定任务流失败",err);
