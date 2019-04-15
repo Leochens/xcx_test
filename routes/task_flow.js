@@ -47,7 +47,7 @@ router.post(url, function (req, res) {
     const u_id = req.params.u_id;
     console.log('tf=>', tf, ' u_id=>', u_id);
     TaskFlow.addTaskFlow(u_id, tf).then(function (tf_id) {
-
+        tf.id = tf_id;
         messageControl.createNewTaskFlow(tf, u_id); // 添加一条消息
 
         res.json({ msg: "插入成功", id: tf_id, tf: { ...tf, id: tf_id } });

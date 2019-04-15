@@ -11,102 +11,164 @@ const add = function (msg) {
     Message.addMessage(msg).then(res => {
         console.log("新增msg成功", msg);
     }).catch(err => {
-        console.log("新增msg失败", msg,err);
+        console.log("新增msg失败", msg, err);
     });
 }
-const addMultiple = function (msg,u_ids) {
-    Message.addMessageToUsers(msg,u_ids).then(res => {
+const addMultiple = function (msg, u_ids) {
+    Message.addMessageToUsers(msg, u_ids).then(res => {
         console.log("新增msg成功", msg);
     }).catch(err => {
-        console.log("新增msg失败", msg,err);
+        console.log("新增msg失败", msg, err);
+    });
+}
+
+
+// 给单个人发消息
+const toSingle = function (u_id, msg) {
+    msg.u_id = u_id;
+    add(msg);
+}
+
+const toLeader = function (tf_id, msg) {
+    TaskFlow.getTaskFlowByTFId(tf_id).then(tf => {
+        const leader_id = tf;
+        toSingle(leader_id, msg);
+    }).catch(e => console.log(e));
+}
+
+const toLeaderByTid = function (t_id, msg) {
+    Task.getTaskById(t_id).then(task => {
+        const t = task[0];
+        const tf_id = t.tf_id;
+        toLeader(tf_id, msg);
+    })
+}
+
+// 给子任务的成员发消息
+const toTaskMembers = function (t_id, msg) {
+    Task.getStatusMapByTId(t_id).then(res => {
+        const u_ids = res.map(sm => sm.u_id);
+        addMultiple(msg, u_ids);
+    }).catch(e => console.log(e));
+}
+
+// 给全部人员发消息
+const toAll = function (tf_id, msg) {
+    User.getUsersByTFId(tf_id).then(users => {
+        const u_ids = users.map(user => user.id);
+        console.log("u_ids=>", Array.from(u_ids));
+        // const leader = users.filter(user=>user.id === newTf.leader_id)[0];
+        addMultiple(msg, Array.from(u_ids));
+    }).catch(err => {
+        console.log(err);
     });
 }
 // 负责人创建了一个新的任务流
-function createNewTaskFlow(tf,u_id) {
+function createNewTaskFlow(tf, u_id) {
     const msg = {
         content: `您创建了任务流${tf.tf_name},截止日期为:${tf.end_time}`,
-        to_user_id: u_id
+        to_user_id: u_id,
+        tf_id: tf.id
     }
     add(msg);
 }
 
 // 成员新加入一个任务流
-function joinInNewTaskFlow(tf_id,u_id) {
+function joinInNewTaskFlow(tf_id, u_id) {
     TaskFlow.getTaskFlowByTFId(tf_id).then(_tf => {
-        console.log("in joinInNewTaskFlow tf = ",_tf)
+        console.log("in joinInNewTaskFlow tf = ", _tf)
         const tf = _tf[0];
         const msg = {
             content: `您新加入了任务流:${tf.tf_name},截止日期为:${tf.end_time}`,
-            to_user_id: u_id
+            to_user_id: u_id,
+            tf_id: tf_id
         }
-
         add(msg);
     }).catch(err => {
-        console.log("消息函数>joinInNewTaskFlow 查询指定任务流失败",err);
+        console.log("消息函数>joinInNewTaskFlow 查询指定任务流失败", err);
     })
 }
 
 // 创建一个新的子任务 需要给任务人发通知
-function createNewTask(t_id,u_ids){
-    Task.getTaskById(t_id).then(task=>{
-        TaskFlow.getTaskFlowByTFId(tf_id).then(tf=>{
-            // console.log(task)
+function createNewTask(t_id, u_ids) {
+    Task.getTaskById(t_id).then(t => {
+        const task = t[0];
+        TaskFlow.getTaskFlowByTFId(task.tf_id).then(tf => {
             const msg = {
-                content:`你有一个新的任务需要完成:${task[0].t_name},截止日期为:${task[0].end_time},所属任务流:${tf.tf_name}`
+                content: `你有一个新的任务需要完成:${task.t_name},截止日期为:${task.end_time}`,
+                t_id: t_id,
+                tf_id: task.tf_id
             }
-            addMultiple(msg,u_ids);
+            addMultiple(msg, u_ids);
         }).catch(err => {
-            console.log("消息函数>createNewTask 查询指定任务流失败",err);
+            console.log("消息函数>createNewTask 查询指定任务流失败", err);
         })
-    }).catch(err=>{
+    }).catch(err => {
         console.log(err);
     })
 }
 
 // 完成一个子任务 给子任务人和负责人发消息
-function completeTask(t_id,u_ids){
+function completeTask(t_id) {
+    Task.getTaskById(t_id).then(t => {
+        const task = t[0];
+        const msg = {
+            content: `子任务:${task.t_name}已完成`,
+            t_id: task.id,
+            tf_id: task.tf_id
+        }
 
+        toLeader(task.tf_id);
+        toTaskMembers(t_id, msg);
+
+    }).catch(err => {
+        console.log("消息函数>createNewTask 查询指定任务流失败", err);
+    })
 }
 
 
 // 任务流完成了 给全部人员发消息
-function completeTaskFlow(tf_id){
+function completeTaskFlow(tf_id) {
 
     const msg = {
-        content:"任务流... 已完成"
+        content: "任务流... 已完成"
     }
 
+    toAll(tf_id, msg);
+}
+// 子任务完成了 给任务成员和负责人发消息
+
+function completeTask(tf_id) {
+
+    const msg = {
+        content: "任务流... 已完成"
+    }
+
+    toAll(tf_id, msg);
 }
 
 // 任务流延期 给全部人员发消息
-function taskFlowChange(tf_id,oldTf,newTf){
-    User.getUsersByTFId(tf_id).then(users=>{
-        const u_ids = users.map(user=>user.id);
-        console.log("u_ids=>",Array.from(u_ids));
-        const leader = users.filter(user=>user.id === newTf.leader_id)[0];
-        const msg = {
-            content:`任务流:${oldTf.tf_name}已经被负责人${leader.nick_name}更改,新的任务流名:${newTf.tf_name},简介为:${newTf.tf_describe},截止时间是:${newTf.end_time}.`
-        };
-        addMultiple(msg,Array.from(u_ids));
-    }).catch(err=>{
-        console.log(err);
-    });
+function taskFlowChange(tf_id, oldTf, newTf) {
 
-
+    const msg = {
+        content: `任务流:${oldTf.tf_name}已经被更改,新的任务流名:${newTf.tf_name},截止时间是:${newTf.end_time}.`,
+        tf_id: tf_id
+    };
+    toAll(tf_id, msg);
 }
 
 
 // 任务人请假的消息 给负责人发
-function memberTakeBreak(t_id,brk){
+function memberTakeBreak(t_id, brk) {
 
 }
 // 请假成功 给请假人发
-function takeBreakSuccess(t_id,brk){
-    
+function takeBreakSuccess(t_id, brk) {
+
 }
 
 // 请假失败 给请假人发
-function taskBreakFailed(){
+function taskBreakFailed() {
 
 }
 module.exports = {

@@ -15,6 +15,7 @@ router.get('/users/:u_id/messages', (req, res) => {
             data:msgs
         })
     }).catch(err=>{
+        console.log(err);
         return res.json(ERR.GET_MESSAGE_FAILD);
     })
 })
