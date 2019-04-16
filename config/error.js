@@ -24,6 +24,9 @@
  * 30006    获取task任务人失败
  * 30007    添加task任务人失败
  * 30008    获得任务人状态失败
+ * 30009    申请请假失败
+ * 30010    同意请假失败
+ * 30011    拒绝请假失败
  * 
  * -----------------4 comment相关 ---------------
  * 40001    评论失败
@@ -128,6 +131,23 @@ const ERR = {
         errCode: 30008,
         errMsg: '获得任务人状态失败'
     },
+    APPLY_BREAK_FAILD: {
+        errCode: 30009,
+        errMsg: '申请请假失败'
+    },
+    ALLOW_BREAK_FAILD: {
+        errCode: 30010,
+        errMsg: '同意请假失败'
+    },
+    REFUSE_BREAK_FAILD: {
+        errCode: 30011,
+        errMsg: '拒绝请假失败'
+    },
+    COMPLETE_TASK_FAILD: {
+        errCode: 30012,
+        errMsg: '完成任务失败'
+    },
+
 
 
 

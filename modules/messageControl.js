@@ -66,7 +66,7 @@ const toAll = function (tf_id, msg) {
 // 负责人创建了一个新的任务流
 function createNewTaskFlow(tf, u_id) {
     const msg = {
-        content: `您创建了任务流${tf.tf_name},截止日期为:${tf.end_time}`,
+        content: `您创建了任务流${tf.tf_name}`,
         to_user_id: u_id,
         tf_id: tf.id
     }
@@ -79,7 +79,7 @@ function joinInNewTaskFlow(tf_id, u_id) {
         console.log("in joinInNewTaskFlow tf = ", _tf)
         const tf = _tf[0];
         const msg = {
-            content: `您新加入了任务流:${tf.tf_name},截止日期为:${tf.end_time}`,
+            content: `您新加入了任务流:${tf.tf_name}`,
             to_user_id: u_id,
             tf_id: tf_id
         }
@@ -95,7 +95,7 @@ function createNewTask(t_id, u_ids) {
         const task = t[0];
         TaskFlow.getTaskFlowByTFId(task.tf_id).then(tf => {
             const msg = {
-                content: `你有一个新的任务需要完成:${task.t_name},截止日期为:${task.end_time}`,
+                content: `你有一个新的任务需要完成:${task.t_name}`,
                 t_id: t_id,
                 tf_id: task.tf_id
             }
@@ -113,7 +113,7 @@ function completeTask(t_id) {
     Task.getTaskById(t_id).then(t => {
         const task = t[0];
         const msg = {
-            content: `子任务:${task.t_name}已完成`,
+            content: `子任务:${task.t_name} 已完成`,
             t_id: task.id,
             tf_id: task.tf_id
         }
@@ -151,7 +151,7 @@ function completeTask(tf_id) {
 function taskFlowChange(tf_id, oldTf, newTf) {
 
     const msg = {
-        content: `任务流:${oldTf.tf_name}已经被更改,新的任务流名:${newTf.tf_name},截止时间是:${newTf.end_time}.`,
+        content: `任务流:${oldTf.tf_name} 已经被更改,新的任务流名: ${newTf.tf_name}`,
         tf_id: tf_id
     };
     toAll(tf_id, msg);

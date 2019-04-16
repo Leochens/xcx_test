@@ -72,8 +72,8 @@ router.post(url, function (req, res) {
     const task = JSON.parse(req.body.task);
     const tf_id = req.params.tf_id;
     if (!task) return res.json(ERR.MISSING_ARGUMENT);
-    const status_map = task.members.map(mem=>{
-        
+    const status_map = task.members.map(mem => {
+
     })
     const t = {
         ...task,
@@ -86,7 +86,7 @@ router.post(url, function (req, res) {
     Task.addTask(tf_id, task).then(t_id => {
         if (Array.isArray(task.members) && task.members.length > 0) { //
             const u_ids = task.members.map(m => m.id);
-            messageControl.createNewTask(t_id,u_ids);
+            messageControl.createNewTask(t_id, u_ids);
             Task.addTaskMember(t_id, u_ids).then(flag => {
                 res.json({
                     msg: "插入新任务成功 插入任务人成功",
@@ -145,4 +145,69 @@ router.delete(url, function (req, res) {
 
 
 
+const break_url = '/tasks/:t_id/break';
+
+/**
+ * 成员申请请假
+ */
+router.post(break_url, function (req, res) {
+    const t_id = req.params.t_id;
+    const break_reason = req.body.break_reason;
+    const u_id = req.body.u_id;
+    console.log("break_reason=>", break_reason);
+    Task.applyTakeBreak(t_id, u_id, break_reason).then(flag => {
+        res.json({
+            msg: "请假请求成功"
+        })
+    }).catch(e => {
+        console.log(e);
+        res.json(ERR.APPLY_BREAK_FAILD);
+    })
+})
+
+/**
+ * 请假结果
+ */
+router.put(break_url, function (req, res) {
+    const t_id = req.params.t_id;
+    const u_id = req.body.u_id;
+    if (!u_id) return res.json(ERR.MISSING_ARGUMENT);
+    const refuse_reason = req.body.refuse_reason;
+
+    if (refuse_reason) { // 拒绝请假
+        Task.refuseTakeBreak(t_id, u_id, refuse_reason).then(flag => {
+            res.json({
+                msg: "拒绝请假成功"
+            })
+        }).catch(e => {
+            res.json(ERR.REFUSE_BREAK_FAILD);
+        })
+    } else {  // 同意请假
+        Task.allowTakeBreak(t_id, u_id).then(flag => {
+            res.json({
+                msg: "同意请假成功"
+            })
+        }).catch(e => {
+            res.json(ERR.ALLOW_BREAK_FAILD);
+        })
+    }
+})
+
+/**
+ * 完成子任务
+ */
+router.post('/tasks/:t_id/complete', function (req, res) {
+    const t_id = req.params.t_id;
+    const { u_id } = req.body;
+    if (!t_id || !u_id) return res.json(ERR.MISSING_ARGUMENT);
+    Task.completeTask(t_id, u_id).then(msg => {
+        res.json({
+            msg: msg
+        });
+    }).catch(e => {
+        console.log(e);
+        res.json(ERR.COMPLETE_TASK_FAILD);
+    })
+
+})
 module.exports = router;
