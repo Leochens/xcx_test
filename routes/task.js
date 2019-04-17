@@ -72,9 +72,7 @@ router.post(url, function (req, res) {
     const task = JSON.parse(req.body.task);
     const tf_id = req.params.tf_id;
     if (!task) return res.json(ERR.MISSING_ARGUMENT);
-    const status_map = task.members.map(mem => {
 
-    })
     const t = {
         ...task,
         comments: [],

@@ -16,6 +16,7 @@ const user = require('./routes/user');
 const comment = require('./routes/comment');
 const image = require('./routes/image');
 const message = require('./routes/message');
+const form_id = require('./routes/form_id');
 
 const log = require('./utils/log');
 app.all('*',log);
@@ -28,6 +29,7 @@ app.use('/',user);
 app.use('/',comment);
 app.use('/',image);
 app.use('/',message);
+app.use('/',form_id);
 
 
 app.get('/', (req, res) => {  res.send('Hello World!') });
