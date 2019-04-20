@@ -45,11 +45,11 @@ const sendMessage = function (touser, template_id, form_id, data) {
             method: "POST",
             json: true,
             body: {
-                "touser": "okulZ5LTxceX9Oq_nQL4Nfg_wUDM",
-                "template_id": "2yp1OS5xu86ZF0OKi2UtbKGdAXc1flIxkMBKZ8MKo1Y",
+                "touser": touser,
+                "template_id": template_id,
                 "page": "index",
-                "form_id": "723b624519744dc5b2aefc7be93d60f3",
-                "data":data,
+                "form_id": form_id,
+                "data": data,
                 "emphasis_keyword": "keyword1.DATA"
             }
         }, callback);
@@ -125,7 +125,7 @@ function createNewTaskFlow(tf, u_id) {
     }
     const template_id = '2yp1OS5xu86ZF0OKi2UtbGuyFaYu8hw_nmzZtuBN1qs';
     formId.getOne().then(fid => {
-        User.getUserInfoById(u_id).then(user=>{
+        User.getUserInfoById(u_id).then(user => {
             sendMessage(u_id, template_id, fid, {
                 "keyword1": {
                     "value": tf.tf_name
@@ -140,7 +140,7 @@ function createNewTaskFlow(tf, u_id) {
                     "value": tf.end_time
                 },
             });
-        }).catch(err=>{console.log(err)});
+        }).catch(err => { console.log(err) });
     }).catch(err => {
         console.log("发送模板消息失败", err)
     })
