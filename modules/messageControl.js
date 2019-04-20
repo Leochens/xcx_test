@@ -126,6 +126,7 @@ function createNewTaskFlow(tf, u_id) {
     const template_id = '2yp1OS5xu86ZF0OKi2UtbGuyFaYu8hw_nmzZtuBN1qs';
     formId.getOne().then(fid => {
         User.getUserInfoById(u_id).then(user => {
+            console.log('user=>',user);
             sendMessage(u_id, template_id, fid, {
                 "keyword1": {
                     "value": tf.tf_name
