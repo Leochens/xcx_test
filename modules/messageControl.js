@@ -4,8 +4,59 @@ const User = require('./user');
 const Message = require('./message');
 const Comment = require('./comment');
 const Image = require('./image');
+const formId = require('./formId');
+const request = require('request');
+const { APP } = require('../config/config');
 
+const getToken = function () {
+    const appId = APP.appID;
+    const secret = APP.appSecret;
+    const token_url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${secret}`;
+    var options = {
+        headers: { "Connection": "close" },
+        url: token_url,
+        method: 'GET',
+        json: true
+    };
 
+    return new Promise(function (resolve, reject) {
+        function callback(error, response, data) {
+            if (!error && response.statusCode == 200) {
+                return resolve(data.access_token);
+            }
+            return reject(error);
+        }
+        request(options, callback);
+    })
+}
+
+const sendMessage = function (touser, template_id, form_id, data) {
+    getToken().then(token => {
+        const url = `https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${token}`;
+
+        function callback(error, response, data) {
+            if (!error && response.statusCode == 200) {
+                console.log("模板消息成功=>", data);
+            }
+            console.log("模板消息失败=>", error)
+        }
+        request({
+            url: url,
+            method: "POST",
+            json: true,
+            body: {
+                "touser": "okulZ5LTxceX9Oq_nQL4Nfg_wUDM",
+                "template_id": "2yp1OS5xu86ZF0OKi2UtbKGdAXc1flIxkMBKZ8MKo1Y",
+                "page": "index",
+                "form_id": "723b624519744dc5b2aefc7be93d60f3",
+                "data":data,
+                "emphasis_keyword": "keyword1.DATA"
+            }
+        }, callback);
+    }).catch(err => {
+        console.log(err);
+    })
+}
 
 const add = function (msg) {
     Message.addMessage(msg).then(res => {
@@ -65,11 +116,34 @@ const toAll = function (tf_id, msg) {
 }
 // 负责人创建了一个新的任务流
 function createNewTaskFlow(tf, u_id) {
+    // const sendMessage = function (touser,template_id,form_id,data) {
+
     const msg = {
         content: `您创建了任务流${tf.tf_name}`,
         to_user_id: u_id,
         tf_id: tf.id
     }
+    const template_id = '2yp1OS5xu86ZF0OKi2UtbGuyFaYu8hw_nmzZtuBN1qs';
+    formId.getOne().then(fid => {
+        User.getUserInfoById(u_id).then(user=>{
+            sendMessage(u_id, template_id, fid, {
+                "keyword1": {
+                    "value": tf.tf_name
+                },
+                "keyword2": {
+                    "value": user.nick_name
+                },
+                "keyword3": {
+                    "value": tf.tf_describe
+                },
+                "keyword4": {
+                    "value": tf.end_time
+                },
+            });
+        }).catch(err=>{console.log(err)});
+    }).catch(err => {
+        console.log("发送模板消息失败", err)
+    })
     add(msg);
 }
 

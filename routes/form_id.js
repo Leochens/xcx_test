@@ -12,12 +12,11 @@ router.post('/formid',function(req,res){
     });
 });
 
-
 router.get('/formid',function(req,res){
 
     formId.getOne().then(fid=>{
         // 此时得到formid
-        
+
         res.json(fid);
     }).catch(err=>{
         res.json(err);

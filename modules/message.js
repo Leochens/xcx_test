@@ -24,7 +24,7 @@ message.addMessage = function (msg) {
         0,
         '${msg.to_user_id}',
         '${msg.tf_id}',
-        '${msg.t_id}'
+        ${msg.t_id ? "'" + msg.t_id + "'" : null}
         )`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(m_id)).catch(err => reject(err));

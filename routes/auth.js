@@ -59,7 +59,8 @@ router.post('/auth', (req, res) => {
                 res.json(ERR.USER_LOGIN_FAILD);
             }
         }
-    } request(options, callback);
+    } 
+    request(options, callback);
 });
 
 
