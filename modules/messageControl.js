@@ -80,7 +80,7 @@ const sendTemplateMsg = function (u_id, template_id, data, leader_id) {
             const leaderIndex = data.indexOf("leader"); // 查看是否要写负责人的名字
             if (leaderIndex != -1) {
                 User.getUserInfoById(leader_id).then(([leader]) => {
-                    data[index] = leader.nick_name; // 昵称替换
+                    data[leaderIndex] = leader.nick_name; // 昵称替换
                     const d = dataWrap(data);
                     sendMessage(u.openid, template_id, fid, d);
                 }).catch(err => console.log(err));
