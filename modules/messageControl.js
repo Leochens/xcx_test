@@ -58,6 +58,41 @@ const sendMessage = function (touser, template_id, form_id, data) {
     })
 }
 
+
+const dataWrap = function (data) {
+    const res = {};
+    if (!Array.isArray(data)) return res;
+
+    data.forEach((d, index) => {
+        const key = "keyword" + (index + 1);
+        res[key] = {
+            "value": d
+        };
+    })
+
+    return res;
+}
+// 发送模板消息
+const sendTemplateMsg = function (u_id, template_id, data, leader_id) {
+    formId.getOne().then(fid => {
+        User.getUserInfoById(u_id).then(user => {
+            const u = user[0];
+            const leaderIndex = data.indexOf("leader"); // 查看是否要写负责人的名字
+            if (leaderIndex != -1) {
+                User.getUserInfoById(leader_id).then(([leader]) => {
+                    data[index] = leader.nick_name; // 昵称替换
+                    const d = dataWrap(data);
+                    sendMessage(u.openid, template_id, fid, d);
+                }).catch(err => console.log(err));
+            } else {
+                const d = dataWrap(data);
+                sendMessage(u.openid, template_id, fid, d);
+            }
+        }).catch(err => { console.log(err) });
+    }).catch(err => {
+        console.log("发送模板消息失败", err)
+    })
+}
 const add = function (msg) {
     Message.addMessage(msg).then(res => {
         console.log("新增msg成功", msg);
@@ -80,11 +115,13 @@ const toSingle = function (u_id, msg) {
     add(msg);
 }
 
-const toLeader = function (tf_id, msg) {
+const toLeader = function (tf_id, msg, templateMsg) {
     TaskFlow.getTaskFlowByTFId(tf_id).then(tf => {
         const leader_id = tf;
         toSingle(leader_id, msg);
+        templateMsg && templateMsg(leader_id); // 发送指定模板消息
     }).catch(e => console.log(e));
+
 }
 
 const toLeaderByTid = function (t_id, msg) {
@@ -96,9 +133,16 @@ const toLeaderByTid = function (t_id, msg) {
 }
 
 // 给子任务的成员发消息
-const toTaskMembers = function (t_id, msg) {
+const toTaskMembers = function (t_id, msg, templateMsg) {
     Task.getStatusMapByTId(t_id).then(res => {
         const u_ids = res.map(sm => sm.u_id);
+
+        if (templateMsg) {
+            for (u_id in u_ids) {
+                templateMsg(u_id);
+            }
+        }
+
         addMultiple(msg, u_ids);
     }).catch(e => console.log(e));
 }
@@ -123,41 +167,23 @@ function createNewTaskFlow(tf, u_id) {
         to_user_id: u_id,
         tf_id: tf.id
     }
-    const template_id = '2yp1OS5xu86ZF0OKi2UtbGuyFaYu8hw_nmzZtuBN1qs';
-    formId.getOne().then(fid => {
-        User.getUserInfoById(u_id).then(user => {
-            const u = user[0];
-            sendMessage(u.openid, template_id, fid, {
-                "keyword1": {
-                    "value": tf.tf_name
-                },
-                "keyword2": {
-                    "value": u.nick_name
-                },
-                "keyword3": {
-                    "value": tf.tf_describe
-                },
-                "keyword4": {
-                    "value": tf.end_time
-                },
-            });
-        }).catch(err => { console.log(err) });
-    }).catch(err => {
-        console.log("发送模板消息失败", err)
-    })
+    const template_id = '2yp1OS5xu86ZF0OKi2UtbGuyFaYu8hw_nmzZtuBN1qs'; // 任务接收通知
+    sendTemplateMsg(u_id, template_id, [tf.tf_name, "leader", tf.tf_describe, tf.end_time]);
+
     add(msg);
 }
 
 // 成员新加入一个任务流
 function joinInNewTaskFlow(tf_id, u_id) {
     TaskFlow.getTaskFlowByTFId(tf_id).then(_tf => {
-        console.log("in joinInNewTaskFlow tf = ", _tf)
+
         const tf = _tf[0];
         const msg = {
             content: `您新加入了任务流:${tf.tf_name}`,
             to_user_id: u_id,
             tf_id: tf_id
         }
+        sendTemplateMsg(u_id, template_id, [tf.tf_name, "leader", tf.tf_describe, tf.end_time]);
         add(msg);
     }).catch(err => {
         console.log("消息函数>joinInNewTaskFlow 查询指定任务流失败", err);
@@ -173,6 +199,10 @@ function createNewTask(t_id, u_ids) {
                 content: `你有一个新的任务需要完成:${task.t_name}`,
                 t_id: t_id,
                 tf_id: task.tf_id
+            }
+            const template_id = 'XK5o2IztgPCHQricUusQXIGYHCTmGH3ExgB9UxCgTBs'; // 工作任务通知
+            for (u_id in u_ids) {
+                sendTemplateMsg(u_id, template_id, [task.t_name, task.t_describe, task.begin_time, task.end_time]);
             }
             addMultiple(msg, u_ids);
         }).catch(err => {
@@ -193,8 +223,12 @@ function completeTask(t_id) {
             tf_id: task.tf_id
         }
 
-        toLeader(task.tf_id);
-        toTaskMembers(t_id, msg);
+        toLeader(task.tf_id, function (u_id) {
+            sendTemplateMsg(u_id);
+        });
+        toTaskMembers(t_id, msg, function (u_id) {
+            sendTemplateMsg(u_id);
+        });
 
     }).catch(err => {
         console.log("消息函数>createNewTask 查询指定任务流失败", err);
@@ -216,7 +250,7 @@ function completeTaskFlow(tf_id) {
 function completeTask(tf_id) {
 
     const msg = {
-        content: "任务流... 已完成"
+        content: "任务... 已完成"
     }
 
     toAll(tf_id, msg);
