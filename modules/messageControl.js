@@ -168,7 +168,7 @@ function createNewTaskFlow(tf, u_id) {
         tf_id: tf.id
     }
     const template_id = '2yp1OS5xu86ZF0OKi2UtbGuyFaYu8hw_nmzZtuBN1qs'; // 任务接收通知
-    sendTemplateMsg(u_id, template_id, [tf.tf_name, "leader", tf.tf_describe, tf.end_time]);
+    sendTemplateMsg(u_id, template_id, [tf.tf_name, "leader", tf.tf_describe, tf.end_time],tf.leader_id);
 
     add(msg);
 }
@@ -183,7 +183,7 @@ function joinInNewTaskFlow(tf_id, u_id) {
             to_user_id: u_id,
             tf_id: tf_id
         }
-        sendTemplateMsg(u_id, template_id, [tf.tf_name, "leader", tf.tf_describe, tf.end_time]);
+        sendTemplateMsg(u_id, template_id, [tf.tf_name, "leader", tf.tf_describe, tf.end_time],tf.leader_id);
         add(msg);
     }).catch(err => {
         console.log("消息函数>joinInNewTaskFlow 查询指定任务流失败", err);
