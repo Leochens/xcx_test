@@ -10,15 +10,4 @@ router.post('/formid',function(req,res){
     res.json("看控制台");
 });
 
-router.get('/formid',function(req,res){
-
-    formId.getOne().then(fid=>{
-        // 此时得到formid
-
-        res.json(fid);
-    }).catch(err=>{
-        res.json(err);
-    })
-
-});
 module.exports = router;

@@ -74,7 +74,7 @@ const dataWrap = function (data) {
 }
 // 发送模板消息
 const sendTemplateMsg = function (u_id, template_id, data, leader_id) {
-    formId.getOne().then(fid => {
+    formId.getOne(u_id).then(fid => {
         User.getUserInfoById(u_id).then(user => {
             const u = user[0];
             const leaderIndex = data.indexOf("leader"); // 查看是否要写负责人的名字

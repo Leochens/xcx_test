@@ -15,19 +15,12 @@ formId.addFormId = function (fid,u_id) {
 // 得到用户的
 formId.getOne = function (u_id) {
     return new Promise(function (resolve, reject) {
-        client.lrange('uid:'+u_id, 0,-1,function (err, items) {
+        client.brpop('uid:'+u_id,100,function(err,fid){
             if (err) {
                 console.log(err);
                 return reject(err);
             }
-            if(!items.length) {
-                console.log("当前无formid");
-                return reject("当前无formid");
-            }
-            console.log(items);
-            const fid = items.pop(); // note
             console.log("被选中的formid",fid);
-
             return resolve(fid);
         })
     })
