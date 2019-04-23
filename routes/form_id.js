@@ -5,7 +5,8 @@ const checkSession = require('../utils/checkSession');
 
 router.post('/formid',function(req,res){
     const formid = req.body.formid;
-    formId.addFormId(formid).then(msg=>{
+    const u_id = req.body.u_id;
+    formId.addFormId(formid,u_id).then(msg=>{
         res.json(msg);
     }).catch(err=>{
         res.json(err);
