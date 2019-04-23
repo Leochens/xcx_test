@@ -20,8 +20,9 @@ formId.getOne = function (u_id) {
                 console.log(err);
                 return reject(err);
             }
-            console.log("被选中的formid",fid);
-            return resolve(fid);
+            // fid['key','value']
+            console.log("被选中的formid",fid[1]);
+            return resolve(fid[1]);
         })
     })
 }
