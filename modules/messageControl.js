@@ -203,6 +203,7 @@ function createNewTask(t_id, u_ids) {
                 tf_id: task.tf_id
             }
             const template_id = 'XK5o2IztgPCHQricUusQXIGYHCTmGH3ExgB9UxCgTBs'; // 工作任务通知
+            console.log("当前子任务成员:",u_ids); // 中午回来测试
             for (u_id in u_ids) {
                 sendTemplateMsg(u_id, template_id, [task.t_name, task.t_describe, task.begin_time, task.end_time]);
             }
