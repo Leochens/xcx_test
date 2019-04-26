@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const request = require('request');
-const {APP} = require('../config/config');
+const { APP } = require('../config/config');
 const User = require('../modules/user');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
@@ -9,12 +9,12 @@ const client = require('../redis');
 const ERR = require('../config/error');
 
 const options = {
-    client:client,
+    client: client,
     "host": "127.0.0.1",
     "port": "6379",
     // "ttl": 60 * 60 * 24 * 30,   //Session的有效期为30天
-    "ttl": 60*60,   //Session的有效期为1 hour
-    "prefix":'SID:'
+    "ttl": 60 * 60 * 24 * 7,   //Session的有效期为7 day
+    "prefix": 'SID:'
 };
 router.use(session({
     store: new RedisStore(options),
@@ -43,7 +43,7 @@ router.post('/auth', (req, res) => {
     function callback(error, response, data) {
         if (!error && response.statusCode == 200) {
             if (data.session_key && data.openid) {
-                console.log("微信auth返回的data=>",data);
+                console.log("微信auth返回的data=>", data);
                 req.session.user = data;
                 User.insertUserByOpenId(data.openid).then(function (u_id) {
                     console.log("用户正在登陆，新老用户都可以获得一个u_id=>", u_id);
@@ -59,7 +59,7 @@ router.post('/auth', (req, res) => {
                 res.json(ERR.USER_LOGIN_FAILD);
             }
         }
-    } 
+    }
     request(options, callback);
 });
 

@@ -7,7 +7,7 @@ router.post('/formid',function(req,res){
     const formid = req.body.formid;
     const u_id = req.body.u_id;
     formId.addFormId(formid,u_id);
-    res.json("看控制台");
+    res.json("ok");
 });
 
 module.exports = router;
