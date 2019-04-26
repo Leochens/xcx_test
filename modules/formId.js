@@ -8,7 +8,7 @@ client.auth('123456', function () {
 
 // 为不同用户缓存form_id
 formId.addFormId = function (fid, u_id) {
-    if (fid === 'the formId is a mock one') return reject("the formId is a mock one");
+    if (fid === 'the formId is a mock one') return "the formId is a mock one";
     console.log("前端发的fid", fid);
     client.lpush('uid:' + u_id, fid, redis.print);
 }
