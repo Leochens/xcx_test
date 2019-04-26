@@ -15,28 +15,30 @@ formId.addFormId = function (fid, u_id) {
         fid,
         time: Date.parse(new Date())
     }
-    client.lpush(key, data, redis.print);
+    client.lpush(key, JSON.stringify(data), redis.print);
 }
 // 得到用户的
 formId.getOne = function (u_id) {
     return new Promise(function (resolve, reject) {
         while (1) {
-            client.brpop('uid:' + u_id, 100, function (err, fid) {
+            client.brpop('uid:' + u_id, 100, function (err, form) {
                 if (err) {
                     console.log(err);
                     return reject(err);
                 }
-                if (!fid) {
+                const formData = JSON.parse(form[1]);
+
+                if (!formData.fid) {
                     console.log("获得的fid为null");
                     return reject('获得的fid为null');
                 }
                 const now = Date.parse(new Date());
-                const time = fid[1].time;
+                const time = formData.time;
                 if (now - time > formIdExpiretion) { // 过期
                     // 继续
                 } else {
-                    console.log("被选中的formid", fid[1].fid);
-                    return resolve(fid[1].fid);
+                    console.log("被选中的formid", formData.fid);
+                    return resolve(formData.fid);
                 }
             })
         }
