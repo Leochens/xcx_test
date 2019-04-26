@@ -24,7 +24,6 @@ formId.getOne = function (u_id) {
                 console.log("获得的fid为null");
                 return reject('获得的fid为null');
             }
-            // fid['key','value']
             console.log("被选中的formid", fid[1]);
             return resolve(fid[1]);
         })

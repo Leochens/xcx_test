@@ -8,14 +8,15 @@ const Comment = require('../modules/comment');
 const ERR = require('../config/error');
 const messageControl = require('../modules/messageControl');
 
-const url = '/users/:u_id/task_flows/';
+const url = '/users/:u_id/task_flows';
 
 
 
 // 在这里做判断
-router.delete(url, async function (req, res, next) {
+router.delete(url + "/:tf_id", async function (req, res, next) {
     const u_id = req.params.u_id;
-    const { tf_id } = req.body;
+    const tf_id = req.params.tf_id;
+    console.log("delete判断", u_id, tf_id);
     let noAuth = false;
     await User.checkRole(u_id, tf_id).catch(function (errMsg) {
         noAuth = true;
@@ -135,9 +136,10 @@ router.get(url, function (req, res) {
  * 返回flag true|false
  */
 
-router.delete(url, async function (req, res) {
+router.delete(url + '/:tf_id', async function (req, res) {
     const u_id = req.params.u_id;
-    const tf_id = req.body.tf_id;
+    const tf_id = req.params.tf_id;
+
     if (!u_id || !tf_id) { return res.json(ERR.MISSING_ARGUMENT) };
 
     TaskFlow.deleteTaskFlow(u_id, tf_id).then(function (flag) {
