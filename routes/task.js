@@ -5,6 +5,7 @@ const checkSession = require('../utils/checkSession');
 const Task = require('../modules/task');
 const Comment = require('../modules/comment');
 const User = require('../modules/user');
+const Image = require('../modules/image');
 const url = '/task_flows/:tf_id/tasks';
 const messageControl = require('../modules/messageControl');
 
@@ -43,6 +44,7 @@ router.get(url, function (req, res) {
             task.members = await User.getUsersByTId(t_id);
             task.comments = await Comment.getCommentByTId(t_id);
             task.status_map = await Task.getStatusMapByTId(t_id);
+            task.images = await Image.getImagesByTId(t_id);
         }
         return res.json({
             msg: "获取成功",

@@ -4,6 +4,7 @@ const checkSession = require('../utils/checkSession');
 const TaskFlow = require('../modules/taskFlow');
 const User = require('../modules/user');
 const Task = require('../modules/task');
+const Image = require('../modules/image');
 const Comment = require('../modules/comment');
 const ERR = require('../config/error');
 const messageControl = require('../modules/messageControl');
@@ -116,6 +117,8 @@ router.get(url, function (req, res) {
                 t.members = await User.getUsersByTId(t_id);
                 t.comments = await Comment.getCommentByTId(t_id);
                 t.status_map = await Task.getStatusMapByTId(t_id);
+                t.images = await Image.getImagesByTId(t_id);
+
             }
             item.members = await User.getUsersByTFId(tf_id);
             // item.status_map = await 
