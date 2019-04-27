@@ -3,10 +3,11 @@ const app = express()
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+const multer  = require('multer');
 app.use(jsonParser);
 app.use(bodyParser.urlencoded({ extended: false }));  
 app.use(cookieParser());
-
+app.use(multer({ dest: './uploads/'}).array('image'));
 
 const auth = require('./routes/auth');
 const profile = require('./routes/profile');
