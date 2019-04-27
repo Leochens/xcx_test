@@ -30,7 +30,8 @@ router.post(url, function (req, res) {
         console.log("img=>", img);
         Image.addImage(img).then(flag => {
             return res.json({
-                msg: "上传图片成功"
+                msg: "上传图片成功",
+                img
             });
         }).catch(err => {
             console.log(err);
