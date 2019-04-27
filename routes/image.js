@@ -6,7 +6,6 @@ const ERR = require('../config/error');
 const url = '/images';
 router.post(url, function (req, res) {
     if (!req.body.img) return res.json(ERR.MISSING_ARGUMENT);
-    const img = JSON.parse(req.body.img);
     Image.addImage(img).then(flag => {
         return res.json({
             msg: "上传图片成功"
