@@ -25,7 +25,7 @@ router.post(url, function (req, res) {
             id,
             url,
             t_id,
-            u_id
+            u_id 
         }
         console.log("img=>", img);
         Image.addImage(img).then(flag => {
