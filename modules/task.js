@@ -1,6 +1,6 @@
 const genId = require('../utils/genId');
 const dbQuery = require('../utils/dbQuery');
-const messageControl = require('./messageControl');
+
 const task = {};
 
 /**
@@ -103,7 +103,6 @@ task._completeTask = function (t_id) {
     dbQuery(sql_complete_task).then(flag => {
         console.log("完成子任务");
         // 此处发消息
-        messageControl.completeTask(t_id);
 
     }).catch(e => console.log(e));
 }
