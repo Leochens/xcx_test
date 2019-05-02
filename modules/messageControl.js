@@ -30,7 +30,8 @@ const getToken = function () {
     })
 }
 
-const sendMessage = function (touser, template_id, form_id, data) {
+const sendMessage = function (touser, template_id, form_id, data,_page) {
+    const page = _page ||  "pages/index/index";
     getToken().then(token => {
         const url = `https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${token}`;
 
@@ -47,7 +48,7 @@ const sendMessage = function (touser, template_id, form_id, data) {
             body: {
                 "touser": touser,
                 "template_id": template_id,
-                "page": "index",
+                "page": page,
                 "form_id": form_id,
                 "data": data,
                 "emphasis_keyword": "keyword1.DATA"
@@ -236,8 +237,6 @@ function completeTask(t_id) {
         console.log("消息函数>createNewTask 查询指定任务流失败", err);
     })
 }
-
-
 // 任务流完成了 给全部人员发消息
 function completeTaskFlow(tf_id) {
 
@@ -249,14 +248,6 @@ function completeTaskFlow(tf_id) {
 }
 // 子任务完成了 给任务成员和负责人发消息
 
-function completeTask(tf_id) {
-
-    const msg = {
-        content: "任务... 已完成"
-    }
-
-    toAll(tf_id, msg);
-}
 
 // 任务流延期 给全部人员发消息
 function taskFlowChange(tf_id, oldTf, newTf) {
