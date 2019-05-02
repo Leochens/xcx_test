@@ -26,6 +26,7 @@ formId.getOne = function (u_id) {
                 console.log(err);
                 return reject(err);
             }
+            console.log(form);
             const formData = JSON.parse(form[1]);
 
             if (!formData.fid) {
