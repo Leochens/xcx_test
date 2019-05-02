@@ -7,7 +7,7 @@ const Image = require('./image');
 const formId = require('./formId');
 const request = require('request');
 const { APP } = require('../config/config');
-
+const formatTime = require('../utils/formatTime');
 const getToken = function () {
     const appId = APP.appID;
     const secret = APP.appSecret;
@@ -225,12 +225,12 @@ function completeTask(t_id) {
             t_id: task.id,
             tf_id: task.tf_id
         }
-
+        const template_id = 'Rz-yCqQKcjYqUD8m521GVu2I1xyjxnhW3hctG-B2pkI'
         toLeader(task.tf_id, function (u_id) {
-            sendTemplateMsg(u_id);
+            sendTemplateMsg(u_id,template_id,[task.t_name,task.t_describe,task.begin_time,formatTime(new Date())]);
         });
         toTaskMembers(t_id, msg, function (u_id) {
-            sendTemplateMsg(u_id);
+            sendTemplateMsg(u_id,template_id,[task.t_name,task.t_describe,task.begin_time,formatTime(new Date())]);
         });
 
     }).catch(err => {
