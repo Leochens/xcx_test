@@ -119,7 +119,7 @@ const toSingle = function (u_id, msg) {
 
 const toLeader = function (tf_id, msg, templateMsg) {
     TaskFlow.getTaskFlowByTFId(tf_id).then(tf => {
-        const leader_id = tf;
+        const leader_id = tf.leader_id;
         toSingle(leader_id, msg);
         templateMsg && templateMsg(leader_id); // 发送指定模板消息
     }).catch(e => console.log(e));
