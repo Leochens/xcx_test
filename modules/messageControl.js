@@ -113,6 +113,7 @@ const addMultiple = function (msg, u_ids) {
 // 给单个人发消息
 const toSingle = function (u_id, msg) {
     msg.u_id = u_id;
+    msg.to_user_id = u_id;
     add(msg);
 }
 
