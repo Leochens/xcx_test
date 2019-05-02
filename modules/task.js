@@ -125,9 +125,9 @@ task.completeTask = function (t_id, u_id) {
                 const len = res.length;
                 if (len === 0) { // 说明没有人正在进行任务 那就是说该完成任务的人都已经完成任务了 
                     task._completeTask(t_id);
-                    return resolve("完成子任务")
+                    return resolve({msg:"完成任务",flag:'all'})
                 } else {
-                    return resolve("部分完成子任务")
+                    return resolve({msg:"任务部分完成",flag: 'part'})
                 }
             }).catch(err => reject(err)); 
         }).catch(err => reject(err));

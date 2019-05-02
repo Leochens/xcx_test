@@ -200,9 +200,12 @@ router.post('/tasks/:t_id/complete', function (req, res) {
     const t_id = req.params.t_id;
     const { u_id } = req.body;
     if (!t_id || !u_id) return res.json(ERR.MISSING_ARGUMENT);
-    Task.completeTask(t_id, u_id).then(msg => {
+    Task.completeTask(t_id, u_id).then(ret => {
+        const flag = ret.flag;
+        if (flag === 'all')
+            messageControl.completeTask(t_id);
         res.json({
-            msg: msg
+            msg: ret.msg
         });
     }).catch(e => {
         console.log(e);
