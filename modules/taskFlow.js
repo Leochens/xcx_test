@@ -123,6 +123,7 @@ taskFlow.deleteTaskFlow = function (u_id, tf_id) {
 // }
 taskFlow.addTaskFlow = function (u_id, tf) {
     const tf_id = genId.genUniqueId();
+    console.log("在addTaskFlow tf=>",tf)
     const sql = `replace into task_flow values(
         '${tf_id}',
         '${tf.tf_name}',

@@ -4,7 +4,8 @@ const DB = {
     user: 'root',
     password: '123456',
     database: 'xcx_task_flow',
-    multipleStatements: true
+    multipleStatements: true,
+    charset: 'utf8mb4'
 }
 const APP = {
     appID: "wxf18a4b27a92c63bf",
