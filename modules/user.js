@@ -175,4 +175,15 @@ User.addTFMember = function (tf_id, u_id) {
 ///////////////////////////////////////////////////////////////////////////
 
 
+
+
+User.getReviewList = function (u_id) {
+    const sql = `SELECT task_flow.id as tf_id,task_flow.tf_name ,task.id as t_id,task.t_name,user_task.u_id as apply_user_id, user.nick_name as apply_user_name,  user_status,break_reason,refuse_reason from task_flow LEFT JOIN task ON task_flow.id = task.tf_id LEFT JOIN user_task on user_task.t_id = task.id left JOIN user on user.id = user_task.u_id
+    WHERE leader_id = '${u_id}' AND user_status = 3`;
+    // 获得当前用户所负责的任务流的所有子任务需要请假的任务的审核列表
+    return new Promise((resolve, reject) => {
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err))
+    })
+}
+
 module.exports = User;

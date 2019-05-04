@@ -34,7 +34,7 @@ router.post(tf_url, function (req, res) {
     const u_id = req.body.u_id;
     const tf_id = req.params.tf_id;
     if (!u_id) { return res.json(ERR.MISSING_ARGUMENT) }
-    messageControl.joinInNewTaskFlow(tf_id,u_id);
+    messageControl.joinInNewTaskFlow(tf_id, u_id);
     User.addTFMember(tf_id, u_id).then(flag => res.json(flag)).catch(err => {
         console.log(err);
         return res.json(ERR.TF_INVITE_MEMBER_FAILD);
@@ -110,7 +110,7 @@ router.post(t_url + '/status', function (req, res) {
 router.post(t_url, function (req, res) {
     const t_id = req.params.t_id;
     const u_ids = JSON.parse(req.body.u_ids);
-    messageControl.createNewTask(t_id,u_ids);
+    messageControl.createNewTask(t_id, u_ids);
     Task.addTaskMember(t_id, u_ids).then(flag => {
         console.log("添加task的任务人成功");
         return res.json("添加task的任务人成功");
@@ -142,6 +142,22 @@ router.get('/users', function (req, res) {
     });
 
 })
+
+const review_url = '/users/:u_id/reviews';
+
+router.get(review_url, function (req, res) {
+    const u_id = req.params.u_id;
+
+    User.getReviewList(u_id).then(list => {
+        res.json({
+            msg: '获得审核列表成功',
+            data: list
+        })
+    }).catch(err => {
+        console.log(err);
+        res.json(ERR.GET_REVIEW_LIST_FAIL);
+    })
+});
 
 
 module.exports = router;

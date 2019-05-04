@@ -64,7 +64,7 @@ task.addTask = function (tf_id, task) {
 task.addTaskMember = function (t_id, u_ids) {
     // 批量插入
     // if(!t_id||!u_ids||!Array.isArray(u_ids)) return 
-    const values = u_ids.map(u_id => [`${u_id}`, `${t_id}`, 1, '', '']);
+    const values = u_ids.map(u_id => [`${u_id}`, `${t_id}`, 1, '', '']) || [];
     const sql = `replace into user_task values ?`;
     return new Promise((resolve, reject) => {
         dbQuery(sql, values).then(res => resolve(res)).catch(err => reject(err));
