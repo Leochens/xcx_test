@@ -119,10 +119,24 @@ router.post(url, function (req, res) {
  * 要做权限认证 
  */
 router.put(url, function (req, res) {
-    const { t_id, u_id, task } = req.body;
+    const { task, members } = req.body;
     const _task = JSON.parse(task);
-    if (!t_id || !u_id || !_task) return res.json(ERR.MISSING_ARGUMENT);
-    Task.updateTask(t_id, _task).then(flag => res.json(_task)).catch(err => {
+    if (!_task || !members) return res.json(ERR.MISSING_ARGUMENT);
+    console.log('_task=>', _task);
+    const t_id = _task.id;
+    const u_ids = members.map(m => m.id);
+
+    Task.updateTask(t_id, _task).then(flag => {
+        Task.addTaskMember(t_id, u_ids).then(f => {
+            return res.json({
+                msg: "更新任务成功",
+                data: _task
+            })
+        }).catch(err => {
+            console.log(err);
+            return res.json(ERR.TASK_UPDATE_FAILD);
+        });
+    }).catch(err => {
         console.log(err);
         return res.json(ERR.TASK_UPDATE_FAILD);
     })

@@ -75,15 +75,13 @@ task.addTaskMember = function (t_id, u_ids) {
  * 更改一个task的信息 需要role检测
  */
 task.updateTask = function (t_id, task) {
-    const sql = `replace into task values (
-        '${t_id}',
-        '${task.t_name}',
-        '${task.t_describe}',
-        '${task.begin_time}',
-        '${task.end_time}',
-        ${task.is_completed},
-        '${task.tf_id}',
-        ${task.is_important})`;
+    const sql = `update task set 
+        t_name = '${task.t_name}',
+        t_describe = '${task.t_describe}',
+        begin_time = '${task.begin_time}',
+        end_time = '${task.end_time}',
+        is_important = ${task.is_important}
+        where id = '${t_id}' and tf_id = '${task.tf_id}'`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
@@ -124,11 +122,11 @@ task.completeTask = function (t_id, u_id) {
                 const len = res.length;
                 if (len === 0) { // 说明没有人正在进行任务 那就是说该完成任务的人都已经完成任务了 
                     task._completeTask(t_id);
-                    return resolve({msg:"完成任务",flag:'all'})
+                    return resolve({ msg: "完成任务", flag: 'all' })
                 } else {
-                    return resolve({msg:"任务部分完成",flag: 'part'})
+                    return resolve({ msg: "任务部分完成", flag: 'part' })
                 }
-            }).catch(err => reject(err)); 
+            }).catch(err => reject(err));
         }).catch(err => reject(err));
     })
 }
