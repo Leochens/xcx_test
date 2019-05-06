@@ -15,6 +15,8 @@
  * 20004    删除tf失败
  * 20005    查询tf失败
  * 20006    邀请新成员失败
+ * 20007    改变分类失败
+ * 
  * -----------------3 task相关 ---------------
  * 30001    根据tf_id查询task失败
  * 30002    根据t_id查询task失败
@@ -103,7 +105,10 @@ const ERR = {
         errCode: 20006,
         errMsg: '邀请新成员失败'
     },
-
+    TF_UPDATE_CATEGORY_FAILD: {
+        errCode: 20007,
+        errMsg: '改变分类失败'
+    },
 
     TASK_QUERY_BY_TF_ID_FAILD: {
         errCode: 30001,
@@ -210,7 +215,7 @@ const ERR = {
         errCode: 90005,
         errMsg: '获得数据失败'
     },
-    GET_REVIEW_LIST_FAIL:{
+    GET_REVIEW_LIST_FAIL: {
         errCode: 90006,
         errMsg: '获得审核列表失败'
     }

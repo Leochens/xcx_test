@@ -3,9 +3,6 @@ const dbQuery = require('../utils/dbQuery');
 const Task = require('./task');
 const taskFlow = {};
 
-
-
-
 /**
  * 通过u_id 获得tf
  * 返回一个列表
@@ -31,10 +28,12 @@ taskFlow.getTaskFlowsByUserId = function (u_id) {
         }).catch(err => reject(err))
     })
 }
+
 /**
  * 通过tf_id获得tf
  * 返回一条tf
  */
+
 taskFlow.getTaskFlowByTFId = function (tf_id) {
     const sql = `select * from task_flow where id = '${tf_id}'`;
     return new Promise((resolve, reject) => {

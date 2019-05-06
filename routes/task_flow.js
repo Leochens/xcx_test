@@ -118,7 +118,6 @@ router.get(url, function (req, res) {
                 t.comments = await Comment.getCommentByTId(t_id);
                 t.status_map = await Task.getStatusMapByTId(t_id);
                 t.images = await Image.getImagesByTId(t_id);
-
             }
             item.members = await User.getUsersByTFId(tf_id);
             // item.status_map = await 
@@ -156,4 +155,7 @@ router.delete(url + '/:tf_id', async function (req, res) {
         return res.json(ERR.TF_DELETE_FAILD)
     })
 })
+
+
+
 module.exports = router;
