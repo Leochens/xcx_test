@@ -22,7 +22,7 @@ formId.getOne = function (u_id) {
     // 如何才能保证拿到的一定是不过期的？ 不能用while循环
     return new Promise(function (resolve, reject) {
         client.brpop('uid:' + u_id, 2, function (err, form) {
-            if (err || !form) {
+            if (err) {
                 console.log(err);
                 return reject(err);
             }
