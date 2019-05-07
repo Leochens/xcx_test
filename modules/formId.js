@@ -20,16 +20,20 @@ formId.addFormId = function (fid, u_id) {
 // 得到用户的
 formId.getOne = function (u_id) {
     // 如何才能保证拿到的一定是不过期的？ 不能用while循环
-    
+    const key = 'uid:' + u_id;
     return new Promise(function (resolve, reject) {
-        client.blpop('uid:' + u_id, 2, function (err, form) {
+        client.blpop(key, 2, function (err, form) {
             if (err) {
+                console.log(err);
+                return reject(err);
+            }
+            if (!form) {
+                const err = "拿不到formid";
                 console.log(err);
                 return reject(err);
             }
             console.log(form);
             const formData = JSON.parse(form[1]);
-
             if (!formData.fid) {
                 console.log("获得的fid为null");
                 return reject('获得的fid为null');
@@ -38,8 +42,9 @@ formId.getOne = function (u_id) {
             const time = formData.time;
             if (now - time > formIdExpiretion) { // 过期
                 // 继续
-                console.log("formId过期了 需要重新申请一个");
-
+                console.log("已经没有可以使用的formId了 执行无效formId清空程序");
+                client.ltrim(key, 1, 0)// 清空formId中所有的数据
+                // 即 ltrim key start end 中的start要比end大即可，数值且都为正数。
             } else {
                 console.log("被选中的formid", formData.fid);
                 return resolve(formData.fid);
