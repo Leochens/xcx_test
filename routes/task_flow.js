@@ -131,6 +131,28 @@ router.get(url, function (req, res) {
         res.json(ERR.TF_QUERY_FAILD);
     })
 })
+// 数据简便化
+router.get(url + "/simple", function (req, res) {
+    const u_id = req.params.u_id;
+    TaskFlow.getTaskFlowsByUserId(u_id).then(async function (list) {
+        for (const item of list) { // 只有这种方法可以阻塞的获得tasks
+            const tf_id = item.id;
+            tasks = await Task.getTasksByTfId(tf_id) || [];
+            item.members = await User.getUsersByTFId(tf_id) || [];
+            item.taskStatus = {
+                all: tasks.length,
+                complete: tasks.filter(t => t.is_completed === 1).length
+            }
+        }
+        res.json({
+            msg: "获取成功",
+            data: list
+        });
+    }).catch(function (err) {
+        console.log(err);
+        res.json(ERR.TF_QUERY_FAILD);
+    })
+})
 
 /**
  * 删除一个tf
