@@ -58,9 +58,21 @@ router.get(url, function (req, res) {
 /**
  * 得到一条指定id的task的信息
  */
-router.get(url + '/:t_id', function (req, res) {
+const single = '/tasks/:t_id'
+router.get(single, function (req, res) {
     const t_id = req.params.t_id;
-    Task.getTaskById(t_id).then(task => res.json(task)).catch(err => {
+    Task.getTaskById(t_id).then(async _task => {
+        console.log(t_id);
+        const task = _task.pop();
+        task.members = await User.getUsersByTId(t_id);
+        task.comments = await Comment.getCommentByTId(t_id);
+        task.status_map = await Task.getStatusMapByTId(t_id);
+        task.images = await Image.getImagesByTId(t_id);
+        res.json({
+            msg: "获取成功",
+            data: [task]
+        });
+    }).catch(err => {
         console.log(err);
         return res.json(ERR.TASK_QUERY_BY_T_ID_FAILD);
     })
