@@ -239,4 +239,31 @@ router.post('/tasks/:t_id/complete', function (req, res) {
     })
 
 })
+
+
+const user_all_tasks = '/users/:u_id/tasks';
+/**
+ * 获得一个用户的所有task
+ */
+router.get(user_all_tasks, function (req, res) {
+    const u_id = req.params.u_id;
+    Task.getTasksByUid(u_id).then(async list => {
+        // for (let t of list) {
+        //     const t_id = t.id;
+        //     t.members = await User.getUsersByTId(t_id);
+        //     t.comments = await Comment.getCommentByTId(t_id);
+        //     t.status_map = await Task.getStatusMapByTId(t_id);
+        //     t.images = await Image.getImagesByTId(t_id);
+        // }
+
+        res.json({
+            msg: "获得u_id的tasks成功",
+            data: list
+        })
+    }).catch(err => {
+        console.log(err);
+        res.json(ERR.TASK_QUERY_BY_U_ID_FAILD);
+    })
+});
+
 module.exports = router;

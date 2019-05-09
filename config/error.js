@@ -29,6 +29,7 @@
  * 30009    申请请假失败
  * 30010    同意请假失败
  * 30011    拒绝请假失败
+ * 30012    根据u_id查询task失败
  * 
  * -----------------4 comment相关 ---------------
  * 40001    评论失败
@@ -157,6 +158,10 @@ const ERR = {
     COMPLETE_TASK_FAILD: {
         errCode: 30012,
         errMsg: '完成任务失败'
+    },
+    TASK_QUERY_BY_U_ID_FAILD:{
+        errCode: 30013,
+        errMsg: '根据u_id查询task失败'
     },
 
 

@@ -168,4 +168,12 @@ task.search = function (u_id, keyword) {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
 }
 
+
+task.getTasksByUid = function (u_id) {
+    const sql = `SELECT id,t_name,t_describe,begin_time,end_time,is_completed,tf_id from task LEFT JOIN user_task on task.id = user_task.t_id WHERE u_id = '${u_id}' and tf_id in (
+        SELECT tf_id from user_taskflow WHERE u_id = '${u_id}'
+    )`;
+    return new Promise((resolve, reject) =>
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
+}
 module.exports = task;
