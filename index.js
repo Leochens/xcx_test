@@ -19,6 +19,7 @@ const image = require('./routes/image');
 const message = require('./routes/message');
 const form_id = require('./routes/form_id');
 const category = require('./routes/category');
+const search = require('./routes/search');
 
 const log = require('./utils/log');
 app.all('*',log);
@@ -33,6 +34,7 @@ app.use('/',image);
 app.use('/',message);
 app.use('/',form_id);
 app.use('/',category);
+app.use('/',search);
 
 
 app.get('/', (req, res) => {  res.send('Hello World!') });

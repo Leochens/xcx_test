@@ -158,4 +158,14 @@ task.refuseTakeBreak = function (t_id, u_id, refuse_reason) {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
 }
+
+
+
+task.search = function (u_id, keyword) {
+
+    const sql = `SELECT * from task LEFT JOIN user_task on task.id = user_task.t_id WHERE user_task.u_id = '${u_id}' and (task.t_name LIKE '%${keyword}%' OR task.t_describe LIKE '%${keyword}%');`
+    return new Promise((resolve, reject) =>
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
+}
+
 module.exports = task;

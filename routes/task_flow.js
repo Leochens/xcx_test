@@ -111,7 +111,8 @@ router.get(url, function (req, res) {
     TaskFlow.getTaskFlowsByUserId(u_id).then(async function (list) {
         for (const item of list) { // 只有这种方法可以阻塞的获得tasks
             const tf_id = item.id;
-            item.tasks = await Task.getTasksByTfId(tf_id);
+            const tasks = await Task.getTasksByTfId(tf_id);
+            item.tasks = tasks;
             for (let t of item.tasks) {
                 const t_id = t.id;
                 t.members = await User.getUsersByTId(t_id);
@@ -120,7 +121,12 @@ router.get(url, function (req, res) {
                 t.images = await Image.getImagesByTId(t_id);
             }
             item.members = await User.getUsersByTFId(tf_id);
-            // item.status_map = await 
+
+            item.taskStatus = {
+                all: tasks.length,
+                complete: tasks.filter(t => t.is_completed === 1).length
+            }
+
         }
         res.json({
             msg: "获取成功",

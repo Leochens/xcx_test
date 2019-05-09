@@ -42,7 +42,7 @@ taskFlow.getTaskFlowByTFId = function (tf_id) {
             const tf_id = tf.id;
             Task.getTasksByTfId(tf_id).then(tasks => {
                 tf.tasks = tasks;
-                console.log("in getTaskFlowByTFId tf = ",tf);
+                console.log("in getTaskFlowByTFId tf = ", tf);
                 resolve(tf);
             }).catch(err => reject(err));
             // resolve(res)
@@ -78,7 +78,7 @@ taskFlow.updateTaskFlow = function (tf_id, tf) {
 /**
  * 更新任务流分类
  */
-taskFlow.updateTaskFlowCategory = function (u_id,tf_id,category) {
+taskFlow.updateTaskFlowCategory = function (u_id, tf_id, category) {
     const sql = `update user_taskflow set category = '${category || '默认分类'}'
     where u_id = '${u_id}' and tf_id = '${tf_id}'`;
     return new Promise((resolve, reject) => {
@@ -122,7 +122,7 @@ taskFlow.deleteTaskFlow = function (u_id, tf_id) {
 // }
 taskFlow.addTaskFlow = function (u_id, tf) {
     const tf_id = genId.genUniqueId();
-    console.log("在addTaskFlow tf=>",tf)
+    console.log("在addTaskFlow tf=>", tf)
     const sql = `replace into task_flow values(
         '${tf_id}',
         '${tf.tf_name}',
@@ -153,6 +153,12 @@ taskFlow.addMember = function (tf_id, u_id) {
 }
 
 
+
+taskFlow.search = function (u_id, keyword) {
+    const sql = `SELECT * from task_flow LEFT JOIN user_taskflow on task_flow.id = user_taskflow.tf_id WHERE user_taskflow.u_id = '${u_id}' and (task_flow.tf_name LIKE '%${keyword}%' OR task_flow.tf_describe LIKE '%${keyword}%');`
+    return new Promise((resolve, reject) =>
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
+}
 
 
 
