@@ -137,7 +137,7 @@ taskFlow.addTaskFlow = function (u_id, tf) {
             '${tf_id}',
             1,
             '${tf.category || '默认分类'}',
-            1
+            ${true}
         )`;
     return new Promise((resolve, reject) =>
         dbQuery(sql).then(res => resolve(tf_id)).catch(err => reject(err)))
