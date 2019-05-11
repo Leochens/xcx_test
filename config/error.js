@@ -50,6 +50,7 @@
  * 90004    缺少必要参数
  * 90005    获得数据失败
  * 90006    获得审核列表失败
+ * 90007    获得日志失败
  */
 
 const ERR = {
@@ -223,6 +224,10 @@ const ERR = {
     GET_REVIEW_LIST_FAIL: {
         errCode: 90006,
         errMsg: '获得审核列表失败'
+    },
+    GET_LOGS_FAIL: {
+        errCode: 90007,
+        errMsg: '获得日志失败'
     }
 
 }
