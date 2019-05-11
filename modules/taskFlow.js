@@ -65,7 +65,7 @@ taskFlow.updateTaskFlow = function (tf_id, tf) {
         end_time = '${tf.end_time}',
         leader_id = '${tf.leader_id}'
         where id = '${tf_id}';
-        replace into user_taskflow values(
+        replace into user_taskflow(u_id,tf_id,role,category) values(
             '${tf.leader_id}',
             '${tf_id}',
             1,

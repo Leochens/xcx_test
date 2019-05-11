@@ -8,9 +8,10 @@ const Image = require('../modules/image');
 const Comment = require('../modules/comment');
 const ERR = require('../config/error');
 const messageControl = require('../modules/messageControl');
-
+const Log = require('../modules/log');
 const url = '/users/:u_id/task_flows';
-
+const formatTime = require('../utils/formatTime');
+const timeWithoutSecond = require('../utils/timeWithoutSecond');
 
 
 // 在这里做判断
@@ -52,6 +53,8 @@ router.post(url, function (req, res) {
         tf.id = tf_id;
         messageControl.createNewTaskFlow(tf, u_id); // 添加一条消息
 
+        Log.logTaskFlow(tf_id, `任务流 ${tf.tf_name} 被创建`).catch(err => console.log(err)); // 写任务流日志
+
         res.json({ msg: "插入成功", id: tf_id, tf: { ...tf, id: tf_id } });
     }).catch(function (err) {
         console.log("插入新tf失败", err)
@@ -73,10 +76,22 @@ router.put(url, async function (req, res) {
 
     TaskFlow.getTaskFlowByTFId(tf_id).then(([oldTf]) => {
         console.log(oldTf);
+
         TaskFlow.updateTaskFlow(tf_id, newTf).then(function (flag) {
             try {
                 TaskFlow.updateTaskFlowCategory(u_id, tf_id, newTf.category);
                 messageControl.taskFlowChange(tf_id, oldTf, newTf);
+                if (oldTf.tf_name != newTf.tf_name) {
+                    Log.logTaskFlow(tf_id, `任务流名称由 ${oldTf.tf_name} 改为 ${newTf.tf_name}`).catch(err => console.log(err));
+                }
+                if (oldTf.tf_describe != newTf.tf_describe) {
+                    Log.logTaskFlow(tf_id, `任务流简介被修改为 ${tf.tf_describe}`).catch(err => console.log(err));
+                }
+                const oet = timeWithoutSecond(oldTf.end_time);
+                const net = timeWithoutSecond(newTf.end_time);
+                if (oet != net) {
+                    Log.logTaskFlow(tf_id, `任务流截止日期由${formatTime(new Date(oet))} 被修改 ${formatTime(new Date(net))}`).catch(err => console.log(err));
+                }
                 res.json({
                     errMsg: '更新成功',
                     tf: newTf
@@ -100,7 +115,7 @@ router.put(url + '/:tf_id/invite', function (req, res) {
     const u_id = req.params.u_id;
     const tf_id = req.params.tf_id;
     const status = req.body.status;
-
+    Log.logTaskFlow(tf_id, `负责人${status ? '允许' : '禁止'}成员邀请其他人加入任务流`).catch(err => console.log(err));
     TaskFlow.toggleInviteStatus(tf_id, status).then(r => res.json({ msg: "更新成功" })).catch(err => res.json(ERR.TF_UPDATE_FAILD));
 })
 /**

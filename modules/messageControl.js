@@ -8,6 +8,7 @@ const formId = require('./formId');
 const request = require('request');
 const { APP } = require('../config/config');
 const formatTime = require('../utils/formatTime');
+const timeWithoutSecond = require('../utils/timeWithoutSecond');
 const getToken = function () {
     const appId = APP.appID;
     const secret = APP.appSecret;
@@ -30,8 +31,8 @@ const getToken = function () {
     })
 }
 
-const sendMessage = function (touser, template_id, form_id, data,_page) {
-    const page = _page ||  "pages/index/index";
+const sendMessage = function (touser, template_id, form_id, data, _page) {
+    const page = _page || "pages/index/index";
     getToken().then(token => {
         const url = `https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${token}`;
 
@@ -227,11 +228,11 @@ function completeTask(t_id) {
             tf_id: task.tf_id
         }
         const template_id = 'Rz-yCqQKcjYqUD8m521GVu2I1xyjxnhW3hctG-B2pkI'
-        toLeader(task.tf_id, msg,function (u_id) {
-            sendTemplateMsg(u_id,template_id,[task.t_name,task.t_describe,task.begin_time,formatTime(new Date())]);
+        toLeader(task.tf_id, msg, function (u_id) {
+            sendTemplateMsg(u_id, template_id, [task.t_name, task.t_describe, task.begin_time, formatTime(new Date())]);
         });
         toTaskMembers(t_id, msg, function (u_id) {
-            sendTemplateMsg(u_id,template_id,[task.t_name,task.t_describe,task.begin_time,formatTime(new Date())]);
+            sendTemplateMsg(u_id, template_id, [task.t_name, task.t_describe, task.begin_time, formatTime(new Date())]);
         });
 
     }).catch(err => {
@@ -250,14 +251,35 @@ function completeTaskFlow(tf_id) {
 // 子任务完成了 给任务成员和负责人发消息
 
 
-// 任务流延期 给全部人员发消息
+
+// 任务流修改 给全部人员发消息
+
 function taskFlowChange(tf_id, oldTf, newTf) {
 
-    const msg = {
-        content: `任务流:${oldTf.tf_name} 已经被更改,新的任务流名: ${newTf.tf_name}`,
-        tf_id: tf_id
-    };
-    toAll(tf_id, msg);
+    const contents = [];
+    if (oldTf.tf_name != newTf.tf_name) {
+        const content = `${newTf.tf_name} : 任务流名称由 ${oldTf.tf_name} 改为 ${newTf.tf_name}`;
+        contents.push(content)
+    }
+    if (oldTf.tf_describe != newTf.tf_describe) {
+        const content = `${newTf.tf_name} : 任务流简介被修改为 ${newTf.tf_describe}`;
+        contents.push(content)
+    }
+    const oet = timeWithoutSecond(oldTf.end_time);
+    const net = timeWithoutSecond(newTf.end_time);
+    if (oet != net) {
+        const content = `${newTf.tf_name} : 任务流截止日期由${formatTime(new Date(oet))} 被修改为 ${formatTime(new Date(net))}`;
+        contents.push(content)
+    }
+    if (!contents.length) return; // 没有改变 不发消息
+
+    for (let content of contents) {
+        const msg = {
+            content: content,
+            tf_id: tf_id
+        };
+        toAll(tf_id, msg);
+    }
 }
 
 

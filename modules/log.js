@@ -21,7 +21,7 @@ log.logTaskFlow = function (tf_id, content, important) {
         1,
         '${tf_id}',
         ${null},
-        ${important},
+        ${important || 0},
         '${formatTime(new Date())}'
     )`;
     return new Promise((resolve, reject) => {
@@ -38,7 +38,7 @@ log.logTask = function (t_id, content, important) {
         2,
         ${null},
         '${t_id}',
-        ${important},
+        ${important || 0},
         '${formatTime(new Date())}'
     )`;
     return new Promise((resolve, reject) => {
