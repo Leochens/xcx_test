@@ -94,6 +94,16 @@ router.put(url, async function (req, res) {
 });
 
 /**
+ * 更改是否允许成员邀请成员的状态
+ */
+router.put(url + '/:tf_id/invite', function (req, res) {
+    const u_id = req.params.u_id;
+    const tf_id = req.params.tf_id;
+    const status = req.body.status;
+
+    TaskFlow.toggleInviteStatus(tf_id, status).then(r => res.json({ msg: "更新成功" })).catch(err => res.json(ERR.TF_UPDATE_FAILD));
+})
+/**
  * 获取u_id对应的tfs
  * 返回一个tf组成的列表
  * u_id :{

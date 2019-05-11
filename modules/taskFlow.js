@@ -17,7 +17,8 @@ taskFlow.getTaskFlowsByUserId = function (u_id) {
             is_completed,
             begin_time,
             end_time,
-            leader_id
+            leader_id,
+            invite
         from user_taskflow JOIN task_flow ON task_flow.id = user_taskflow.tf_id 
         WHERE user_taskflow.u_id = '${u_id}' 
         order by begin_time DESC;
@@ -160,6 +161,12 @@ taskFlow.search = function (u_id, keyword) {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
 }
 
+
+taskFlow.toggleInviteStatus = function (tf_id, status) {
+    const sql = `update user_taskflow set invite=${status} where tf_id='${tf_id}'`;
+    return new Promise((resolve, reject) =>
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
+}
 
 
 module.exports = taskFlow;
