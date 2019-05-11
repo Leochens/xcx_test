@@ -17,8 +17,7 @@ taskFlow.getTaskFlowsByUserId = function (u_id) {
             is_completed,
             begin_time,
             end_time,
-            leader_id,
-            remark
+            leader_id
         from user_taskflow JOIN task_flow ON task_flow.id = user_taskflow.tf_id 
         WHERE user_taskflow.u_id = '${u_id}' 
         order by begin_time DESC;
