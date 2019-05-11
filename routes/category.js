@@ -6,7 +6,7 @@ const ERR = require('../config/error');;
 const url = '/categories';
 
 router.put(url, function (req, res) {
-    const { u_id, tf_id, category } = req.params;
+    const { u_id, tf_id, category } = req.body;
     // 更新user_taskflow表的category字段
     TaskFlows.updateTaskFlowCategory(u_id, tf_id, category).then(r => {
         res.json({
