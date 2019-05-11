@@ -106,6 +106,19 @@ User.updateUserById = function (u_id, userInfo) {
         })
     });
 }
+User.updateUserByField = function (u_id, field, value) {
+    const sql = `update user set
+        ${field}='${value}'
+        where id='${u_id}'`
+    return new Promise(function (resolve, reject) {
+        dbQuery(sql).then(res => {
+            console.log(`更新${field}成功`);
+            return resolve(`更新${field}成功`);
+        }).catch(err => {
+            console.log(`更新${field}失败`); return reject(err)
+        })
+    });
+}
 
 
 

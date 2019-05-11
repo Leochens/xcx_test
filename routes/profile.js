@@ -7,9 +7,9 @@ const User = require('../modules/user');
 router.put('/profile/:u_id', (req, res) => {
     // const u_id = req.body.id
     // checkSession()
-    const u_id = req.param('u_id');
+    const u_id = req.params.u_id;
     const userInfo = req.body.userInfo;
-    console.log("/profile 请求参数", req.body, req.param('u_id'));
+    console.log("/profile 请求参数", req.body, u_id);
     User.updateUserById(u_id, userInfo).then(function (flag) {
         if (flag) {
             return res.json({
@@ -27,5 +27,15 @@ router.put('/profile/:u_id', (req, res) => {
     })
 })
 
+router.put('/profile/:u_id/nick_name', function (req, res) {
+    const u_id = req.params.u_id;
+    const nickName = req.body.nickName;
+    if (!nickName) return ERR.MISSING_ARGUMENT;
+
+    User.updateUserByField(u_id, 'nick_name', nickName).then(r => res.json(r)).catch(err => {
+        console.log(err);
+        res.json(ERR.USER_UPDATE_PROFILE_FAILD)
+    });
+})
 
 module.exports = router;
