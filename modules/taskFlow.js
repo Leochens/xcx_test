@@ -157,7 +157,7 @@ taskFlow.addTaskFlow = function (u_id, tf) {
  * 返回tf_id
  */
 taskFlow.addMember = function (tf_id, u_id) {
-    const sql = `insert into user_taskflow values('${u_id}','${tf_id}',0,'默认分类')`;
+    const sql = `insert into user_taskflow values('${u_id}','${tf_id}',0,'默认',${true})`;
     return new Promise((resolve, reject) =>
         dbQuery(sql).then(res => resolve(tf_id)).catch(err => reject(err)))
 }

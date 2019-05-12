@@ -180,7 +180,7 @@ User.deleteUserInTaskFlow = function (tf_id, u_id) {
  * 向TF中添加一个新成员
  */
 User.addTFMember = function (tf_id, u_id) {
-    const sql = `replace into user_taskflow values('${u_id}','${tf_id}',0,0)`;
+    const sql = `replace into user_taskflow values('${u_id}','${tf_id}',0,'默认',${true})`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err))
     })
