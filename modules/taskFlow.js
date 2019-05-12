@@ -3,6 +3,14 @@ const dbQuery = require('../utils/dbQuery');
 const Task = require('./task');
 const taskFlow = {};
 
+
+
+taskFlow.checkUser = function (tf_id, u_id) {
+    const sql = `select * from user_taskflow where tf_id='${tf_id}' and u_id='${u_id}'`;
+    return new Promise((resolve, reject) => {
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
+    })
+}
 /**
  * 通过u_id 获得tf
  * 返回一个列表

@@ -8,6 +8,7 @@ const TaskFlow = require('../modules/taskFlow');
 const Message = require('../modules/message');
 const formatTime = require('../utils/formatTime');
 const messageControl = require('../modules/messageControl');
+const Log = require('../modules/log');
 /**
  * 获得任务流的成员信息
  */
@@ -34,11 +35,27 @@ router.post(tf_url, function (req, res) {
     const u_id = req.body.u_id;
     const tf_id = req.params.tf_id;
     if (!u_id) { return res.json(ERR.MISSING_ARGUMENT) }
-    messageControl.joinInNewTaskFlow(tf_id, u_id);
-    User.addTFMember(tf_id, u_id).then(flag => res.json(flag)).catch(err => {
+    // 进行加入预判 如果该用户已经加入了 那么就不要新加入它
+    TaskFlow.checkUser(tf_id, u_id).then(r => {
+        if (r.length) return res.json(ERR.ALREADY_HAVE_THIS_USER); // 该成员已存在
+
+        User.addTFMember(tf_id, u_id).then(flag => {
+            messageControl.joinInNewTaskFlow(tf_id, u_id);
+            User.getUserInfoById(u_id).then(([user]) => {
+                const nick_name = user.nick_name;
+                Log.logTaskFlow(tf_id, `${nick_name} 加入了任务流`).catch(err => console.log(err));
+            })
+            return res.json(flag);
+        }).catch(err => {
+            console.log(err);
+            return res.json(ERR.TF_INVITE_MEMBER_FAILD);
+        })
+        
+    }).catch(err => {
         console.log(err);
         return res.json(ERR.TF_INVITE_MEMBER_FAILD);
     })
+
 })
 
 /**

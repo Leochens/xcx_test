@@ -51,6 +51,7 @@
  * 90005    获得数据失败
  * 90006    获得审核列表失败
  * 90007    获得日志失败
+ * 90008    该成员已存在
  */
 
 const ERR = {
@@ -160,7 +161,7 @@ const ERR = {
         errCode: 30012,
         errMsg: '完成任务失败'
     },
-    TASK_QUERY_BY_U_ID_FAILD:{
+    TASK_QUERY_BY_U_ID_FAILD: {
         errCode: 30013,
         errMsg: '根据u_id查询task失败'
     },
@@ -228,6 +229,10 @@ const ERR = {
     GET_LOGS_FAIL: {
         errCode: 90007,
         errMsg: '获得日志失败'
+    },
+    ALREADY_HAVE_THIS_USER: {
+        errCode: 90008,
+        errMsg: '该成员已存在'
     }
 
 }

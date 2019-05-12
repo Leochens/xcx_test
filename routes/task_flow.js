@@ -115,6 +115,7 @@ router.put(url + '/:tf_id/invite', function (req, res) {
     const u_id = req.params.u_id;
     const tf_id = req.params.tf_id;
     const status = req.body.status;
+    console.log(status);
     Log.logTaskFlow(tf_id, `负责人${status ? '允许' : '禁止'}成员邀请其他人加入任务流`).catch(err => console.log(err));
     TaskFlow.toggleInviteStatus(tf_id, status).then(r => res.json({ msg: "更新成功" })).catch(err => res.json(ERR.TF_UPDATE_FAILD));
 })
