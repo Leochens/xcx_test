@@ -47,14 +47,14 @@ log.logTask = function (t_id, content, important) {
 }
 
 log.getTaskFlowLogs = function (tf_id) {
-    const sql = `select * from log where type = 1 and tf_id = '${tf_id}'`;
+    const sql = `select * from log where type = 1 and tf_id = '${tf_id}' order by create_time desc`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(list => resolve(list)).catch(err => reject(err));
     })
 }
 
 log.getTaskLogs = function (t_id) {
-    const sql = `select * from log where type = 2 and t_id = '${t_id}'`;
+    const sql = `select * from log where type = 2 and t_id = '${t_id}' order by create_time desc`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(list => resolve(list)).catch(err => reject(err));
     })
