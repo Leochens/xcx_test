@@ -85,7 +85,7 @@ router.put(url, async function (req, res) {
                     Log.logTaskFlow(tf_id, `任务流名称由 ${oldTf.tf_name} 改为 ${newTf.tf_name}`).catch(err => console.log(err));
                 }
                 if (oldTf.tf_describe != newTf.tf_describe) {
-                    Log.logTaskFlow(tf_id, `任务流简介被修改为 ${tf.tf_describe}`).catch(err => console.log(err));
+                    Log.logTaskFlow(tf_id, `任务流简介被修改为 ${newTf.tf_describe}`).catch(err => console.log(err));
                 }
                 const oet = timeWithoutSecond(oldTf.end_time);
                 const net = timeWithoutSecond(newTf.end_time);

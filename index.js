@@ -20,9 +20,10 @@ const message = require('./routes/message');
 const form_id = require('./routes/form_id');
 const category = require('./routes/category');
 const search = require('./routes/search');
+const log = require('./routes/log');
 
-const log = require('./utils/log');
-app.all('*',log);
+const _log = require('./utils/log');
+app.all('*',_log);
 // 路由集合
 app.use('/',auth);
 app.use('/',profile);
@@ -35,6 +36,7 @@ app.use('/',message);
 app.use('/',form_id);
 app.use('/',category);
 app.use('/',search);
+app.use('/',log);
 
 
 app.get('/', (req, res) => {  res.send('Hello World!') });
