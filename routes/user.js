@@ -50,7 +50,7 @@ router.post(tf_url, function (req, res) {
             console.log(err);
             return res.json(ERR.TF_INVITE_MEMBER_FAILD);
         })
-        
+
     }).catch(err => {
         console.log(err);
         return res.json(ERR.TF_INVITE_MEMBER_FAILD);
@@ -68,9 +68,11 @@ router.post(tf_url, function (req, res) {
  */
 router.delete(tf_url, function (req, res) {
     const tf_id = req.params.tf_id;
-    const u_id = req.body.u_id;
+    const u_id = req.body.u_id; // 要退出的人员id
     if (!u_id) { return res.json(ERR.MISSING_ARGUMENT) }
-    User.deleteUserInTaskFlow(tf_id, u_id).then(flag => res.json(flag)).catch(err => {
+    User.deleteUserInTaskFlow(tf_id, u_id).then(flag => {
+        res.json(flag);
+    }).catch(err => {
         console.log(err);
         return res.json(ERR.USER_QUIT_TF_FAILD);
     })

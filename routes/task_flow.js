@@ -15,6 +15,18 @@ const timeWithoutSecond = require('../utils/timeWithoutSecond');
 
 
 // 在这里做判断
+router.delete(url + "/:tf_id/members/:delete_user_id", async function (req, res, next) {
+    const u_id = req.params.u_id;
+    const tf_id = req.params.tf_id;
+    console.log("delete判断", u_id, tf_id);
+    let noAuth = false;
+    await User.checkRole(u_id, tf_id).catch(function (errMsg) {
+        noAuth = true;
+        return res.json(ERR.REQUIRE_LEADER);
+    });
+    if (noAuth) return;
+    next();
+})
 router.delete(url + "/:tf_id", async function (req, res, next) {
     const u_id = req.params.u_id;
     const tf_id = req.params.tf_id;
@@ -130,7 +142,7 @@ router.put(url + '/:tf_id/transfer', function (req, res) {
         TaskFlow.transferLeader(tf_id, u_id, new_leader_id).then(r => {
             Log.logTaskFlow(tf_id, `负责人更改为${user.nick_name}`).catch(err => console.log(err));
             res.json({
-                msg:"负责人更改成功"
+                msg: "负责人更改成功"
             })
         }).catch(err => console.log(err));
     }).catch(err => {
@@ -218,16 +230,36 @@ router.delete(url + '/:tf_id', async function (req, res) {
     if (!u_id || !tf_id) { return res.json(ERR.MISSING_ARGUMENT) };
 
     TaskFlow.deleteTaskFlow(u_id, tf_id).then(function (flag) {
-        console.log(flag);
+        Task.deleteTaskMember(t_id, u_id).then(r => { // 删除一个任务流时 要把他的子任务中的该成员也删掉 注意在task页面会有bug
+            return res.json({
+                msg: flag.affectedRows ? "删除成功" : "删除失败,tf_id:" + tf_id + "不存在"
+            })
+        }).catch(err => { console.log(err); return res.json(ERR.TF_DELETE_FAILD) })
 
-        return res.json({
-            msg: flag.affectedRows ? "删除成功" : "删除失败,tf_id:" + tf_id + "不存在"
-        })
     }).catch(function (err) {
         console.log(err);
         return res.json(ERR.TF_DELETE_FAILD)
     })
 })
+router.delete(url + '/:tf_id/members/:delete_user_id', async function (req, res) {
+    const u_id = req.params.u_id;
+    const tf_id = req.params.tf_id;
+    const delete_user_id = req.params.delete_user_id;
+    if (!u_id || !tf_id || !delete_user_id) { return res.json(ERR.MISSING_ARGUMENT) };
+
+    TaskFlow.deleteTaskFlow(delete_user_id, tf_id).then(function (flag) {
+        Task.deleteTaskMember(tf_id, delete_user_id).then(r => { // 删除一个任务流时 要把他的子任务中的该成员也删掉 注意在task页面会有bug
+            return res.json({
+                msg: flag.affectedRows ? "删除成功" : "删除失败,tf_id:" + tf_id + "不存在"
+            })
+        }).catch(err => { console.log(err); return res.json(ERR.TF_DELETE_FAILD) })
+
+    }).catch(function (err) {
+        console.log(err);
+        return res.json(ERR.TF_DELETE_FAILD)
+    })
+})
+
 
 
 

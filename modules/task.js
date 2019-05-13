@@ -176,4 +176,20 @@ task.getTasksByUid = function (u_id) {
     return new Promise((resolve, reject) =>
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
 }
+
+
+task.deleteTask = function (t_id) {
+    const sql = `delete from task where id = '${t_id}'`;
+    return new Promise((resolve, reject) =>
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
+}
+task.deleteTaskMember = function (tf_id, u_id) {
+    const sql = `delete from user_task where t_id in (SELECT id from task WHERE tf_id = '${tf_id}') and u_id = '${u_id}' `;
+
+    return new Promise((resolve, reject) =>
+        dbQuery(sql).then(res => {
+            resolve(res);
+        }).catch(err => reject(err)))
+}
+
 module.exports = task;
