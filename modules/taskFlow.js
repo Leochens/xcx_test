@@ -100,11 +100,24 @@ taskFlow.updateTaskFlowCategory = function (u_id, tf_id, category) {
  * 要检测uid的role字段
  */
 taskFlow.updateTaskFlowField = function (tf_id, field, value) {
-    const sql = `update task_flow set ${field} = '${value}'`;
+    const sql = `update task_flow set ${field} = '${value}' where id='${tf_id}'`;
     return new Promise(function (resolve, reject) {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
+};
+/**
+ * 转让负责人
+ */
+taskFlow.transferLeader = function (tf_id, old_leader_id, new_leader_id) {
+    const sql = `update user_taskflow set role = 0 where u_id = '${old_leader_id}' and tf_id = '${tf_id}';
+        update user_taskflow set role = 1 where u_id = '${new_leader_id}' and tf_id = '${tf_id}'`
+    return new Promise(function (resolve, reject) {
+        taskFlow.updateTaskFlowField(tf_id, 'leader_id', new_leader_id).then(r => {
+            dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
+        }).catch(err => reject(err));
+    })
 }
+
 /**
  * 根据u_id删除一个tf
  * 只是从user_taskflow映射表中删除了 真实的task_flow表中还存在的

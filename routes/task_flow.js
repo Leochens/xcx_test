@@ -119,6 +119,25 @@ router.put(url + '/:tf_id/invite', function (req, res) {
     Log.logTaskFlow(tf_id, `负责人${status ? '允许' : '禁止'}成员邀请其他人加入任务流`).catch(err => console.log(err));
     TaskFlow.toggleInviteStatus(tf_id, status).then(r => res.json({ msg: "更新成功" })).catch(err => res.json(ERR.TF_UPDATE_FAILD));
 })
+router.put(url + '/:tf_id/transfer', function (req, res) {
+    const u_id = req.params.u_id;
+    const tf_id = req.params.tf_id;
+    const new_leader_id = req.body.new_leader_id;
+
+    console.log("新的负责人id", new_leader_id);
+    User.getUserInfoById(new_leader_id).then(([user]) => {
+        if (!user) res.json(ERR.TF_UPDATE_FAILD);
+        TaskFlow.transferLeader(tf_id, u_id, new_leader_id).then(r => {
+            Log.logTaskFlow(tf_id, `负责人更改为${user.nick_name}`).catch(err => console.log(err));
+            res.json({
+                msg:"负责人更改成功"
+            })
+        }).catch(err => console.log(err));
+    }).catch(err => {
+        console.log(err);
+        res.json(ERR.TF_UPDATE_FAILD);
+    })
+})
 /**
  * 获取u_id对应的tfs
  * 返回一个tf组成的列表
