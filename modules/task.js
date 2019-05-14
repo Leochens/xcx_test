@@ -86,6 +86,13 @@ task.updateTask = function (t_id, task) {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
 }
+
+task.updateTaskField = function (t_id, field, value) {
+    const sql = `update task set ${field}='${value}' where id = '${t_id}'`;
+    return new Promise((resolve, reject) => {
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
+    })
+}
 /**
  * 删除一个task 需要role检测
  */

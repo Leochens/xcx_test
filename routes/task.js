@@ -8,7 +8,7 @@ const User = require('../modules/user');
 const Image = require('../modules/image');
 const url = '/task_flows/:tf_id/tasks';
 const messageControl = require('../modules/messageControl');
-
+const Log = require('../modules/log');
 // 在这里做判断
 router.delete(url, async function (req, res, next) {
     const tf_id = req.params.tf_id;
@@ -32,7 +32,6 @@ router.put(url, async function (req, res, next) {
     if (noAuth) return;
     next();
 })
-
 /**
  * 得到一个tf的所有task
  */
@@ -99,6 +98,8 @@ router.post(url, function (req, res) {
         if (Array.isArray(task.members) && task.members.length > 0) { //
             const u_ids = task.members.map(m => m.id);
             messageControl.createNewTask(t_id, u_ids);
+            Log.logTask(t_id, `子任务${task.t_name}被创建`).catch(err => console.log(err));
+
             Task.addTaskMember(t_id, u_ids).then(flag => {
                 res.json({
                     msg: "插入新任务成功 插入任务人成功",
@@ -210,6 +211,9 @@ router.put(break_url, function (req, res) {
         })
     } else {  // 同意请假
         Task.allowTakeBreak(t_id, u_id).then(flag => {
+            User.getUserInfoById(u_id).then(([user]) => {
+                Log.logTask(t_id, `任务人${user.nick_name}已请假`).catch(err => console.log(err));
+            }).catch(err => console.log(err));
             res.json({
                 msg: "同意请假成功"
             })
@@ -228,8 +232,13 @@ router.post('/tasks/:t_id/complete', function (req, res) {
     if (!t_id || !u_id) return res.json(ERR.MISSING_ARGUMENT);
     Task.completeTask(t_id, u_id).then(ret => {
         const flag = ret.flag;
-        if (flag === 'all')
+        User.getUserInfoById(u_id).then(([user]) => {
+            Log.logTask(t_id, `任务人${user.nick_name}已完成任务`).catch(err => console.log(err));
+        }).catch(err => console.log(err));
+        if (flag === 'all') {
+            Log.logTask(t_id, `任务已完成`).catch(err => console.log(err));
             messageControl.completeTask(t_id);
+        }
         res.json({
             msg: ret.msg
         });
@@ -266,4 +275,66 @@ router.get(user_all_tasks, function (req, res) {
     })
 });
 
+
+// 权限问题
+const edit_url = '/tasks/:t_id';
+router.put(edit_url + '/*', async function (req, res, next) {
+    const { tf_id, u_id } = req.body;
+    let noAuth = false;
+    await User.checkRole(u_id, tf_id).catch(function (errMsg) {
+        noAuth = true;
+        return res.json(ERR.REQUIRE_LEADER);
+    });
+    if (noAuth) return;
+    next();
+})
+router.put(edit_url + '/t_name', function (req, res) {
+    const key = 't_name';
+    const t_id = req.params.t_id;
+    const value = req.body.value;
+    Task.updateTaskField(t_id, key, value).then(r => {
+        Log.logTask(t_id, `子任务名称被修改为${value}`).catch(err => console.log(err));
+        res.json({ msg: `更新${key}成功` })
+    }).catch(err => {
+        console.log(err);
+        return res.json(ERR.TASK_UPDATE_FAILD);
+    })
+})
+router.put(edit_url + '/t_describe', function (req, res) {
+    const key = 't_describe';
+    const t_id = req.params.t_id;
+    const value = req.body.value;
+    Task.updateTaskField(t_id, key, value).then(r => {
+        Log.logTask(t_id, `子任务简介被修改为${value}`).catch(err => console.log(err));
+
+        res.json({ msg: `更新${key}成功` })
+    }).catch(err => {
+        console.log(err);
+        return res.json(ERR.TASK_UPDATE_FAILD);
+    })
+})
+router.put(edit_url + '/end_time', function (req, res) {
+    const key = 'end_time';
+    const t_id = req.params.t_id;
+    const value = req.body.value;
+    Task.updateTaskField(t_id, key, value).then(r => {
+        Log.logTask(t_id, `子任务截止时间被修改为${value}`).catch(err => console.log(err));
+        res.json({ msg: `更新${key}成功` })
+    }).catch(err => {
+        console.log(err);
+        return res.json(ERR.TASK_UPDATE_FAILD);
+    })
+})
+router.put(edit_url + '/members', function (req, res) {
+    const key = 'members';
+    const t_id = req.params.t_id;
+    const u_ids = JSON.parse(req.body.value);
+    Task.addTaskMember(t_id, u_ids).then(r => {
+
+        res.json({ msg: `新增${key}成功` })
+    }).catch(err => {
+        console.log(err);
+        return res.json(ERR.TASK_UPDATE_FAILD);
+    });
+})
 module.exports = router;

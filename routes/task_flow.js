@@ -120,6 +120,8 @@ router.put(url, async function (req, res) {
 
 });
 
+
+
 /**
  * 更改是否允许成员邀请成员的状态
  */
@@ -149,6 +151,14 @@ router.put(url + '/:tf_id/transfer', function (req, res) {
         console.log(err);
         res.json(ERR.TF_UPDATE_FAILD);
     })
+})
+/**
+ * 提前结束任务流
+ * 子任务不能做了
+ */
+router.put(url + '/:tf_id/finish', function (req, res) {
+    const tf_id = req.params.tf_id;
+    TaskFlow.updateTaskFlowField(tf_id, 'is_completed', 1).then(r => res.json({ msg: "结束任务流成功" })).catch(err => res.json(ERR.FINISH_TF_FAILD))
 })
 /**
  * 获取u_id对应的tfs
