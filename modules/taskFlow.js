@@ -191,5 +191,16 @@ taskFlow.toggleInviteStatus = function (tf_id, status) {
 }
 
 
+taskFlow.breakTaskFlow = function (tf_id) {
+    // 删除user_taskflow中的信息
+    // 删除user_task的信息
+    // 删除图片
+    // 删除评论
+    // 删除子任务
+    // 删除任务流
+    const sql = `CALL break_task_flow('${tf_id}')`;
+    return new Promise((resolve, reject) =>
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
+}
 module.exports = taskFlow;
 

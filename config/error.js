@@ -17,6 +17,7 @@
  * 20006    邀请新成员失败
  * 20007    改变分类失败
  * 20008    结束任务流失败
+ * 20009    解散任务流失败
  * 
  * -----------------3 task相关 ---------------
  * 30001    根据tf_id查询task失败
@@ -90,7 +91,6 @@ const ERR = {
     },
 
 
-
     TF_INSERT_FAILD: {
         errCode: 20002,
         errMsg: '新增tf失败'
@@ -119,6 +119,11 @@ const ERR = {
         errCode: 20008,
         errMsg: '结束任务流失败'
     },
+    BREAK_TF_FAILD:{
+        errCode: 20009,
+        errMsg:"解散任务流失败"
+    },
+
 
     TASK_QUERY_BY_TF_ID_FAILD: {
         errCode: 30001,
