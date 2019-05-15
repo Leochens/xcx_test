@@ -206,8 +206,10 @@ taskFlow.breakTaskFlow = function (tf_id) {
 
 
 taskFlow.getAllMemberTaskStatus = function (u_id, t_ids) {
+    if(!Array.isArray(t_ids) || !t_ids.length) return [];
     const arr = t_ids.map(id => `'${id}'`);
     const _str = arr.join(',');
+    console.log(_str);
     const sql = `select * from user_task left join user on user.id = user_task.u_id where u_id='${u_id}' and t_id in (${_str})`;
     return new Promise((resolve, reject) =>
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))

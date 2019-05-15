@@ -299,47 +299,58 @@ router.get(task_flow_data, function (req, res) {
         if (!r.length) return res.json({ msg: "您不是该任务流的成员,无权获得数据" });
         // 获取数据
         TaskFlow.getTaskFlowByTFId(tf_id).then(async function ([task_flow]) {
-            const tasks = await Task.getTasksByTfId(tf_id);
-            const task_ids = tasks.map(task => task.id);
-            const tf_members = await User.getUsersByTFId(tf_id);
-            const tf_members_ids = tf_members.map(m => m.id);
-            const members = [];
-            for (let uid of tf_members_ids) { // 获得人员的状态
-                const status = await TaskFlow.getAllMemberTaskStatus(uid, task_ids);
-                members.push({
-                    nick_name: status[0].nick_name,
-                    all: status.length,
-                    break: status.filter(st => st.user_status === 0).length,
-                    completed: status.filter(st => st.user_status === 1).length
-                })
-            }
-            let images = [];
-            for (let t of tasks) {
-                const t_id = t.id;
-                t.images = await Image.getImagesByTId(t_id);
-                if (t.images && t.images.length) {
-                    images = images.concat(t.images);
+            try {
+                const tasks = await Task.getTasksByTfId(tf_id);
+                const task_ids = tasks.map(task => task.id);
+                const tf_members = await User.getUsersByTFId(tf_id);
+                const tf_members_ids = tf_members.map(m => m.id);
+                const members = [];
+                for (let uid of tf_members_ids) { // 获得人员的状态
+                    const status = await TaskFlow.getAllMemberTaskStatus(uid, task_ids);
+                    if (!status.length) continue;
+                    members.push({
+                        nick_name: status[0].nick_name,
+                        all: status.length,
+                        break: status.filter(st => st.user_status === 0).length,
+                        completed: status.filter(st => st.user_status === 2).length
+                    })
                 }
-            }
-            const data = {
-                tf_name: task_flow.tf_name,
-                tf_describe: task_flow.tf_describe,
-                members_count: tf_members.length,
-                images: images,
-                task_flow: {
-                    all: tasks.length,
-                    completed: tasks.filter(t => t.is_completed === 1).length,
-                    delay: tasks.filter(t => t.is_completed === 2).length,
-                    continues: tasks.filter(t => t.is_completed === 0).length
-                },
-                members: members,
-                tasks: []
-            }
-            res.json({
-                msg: "获得任务流统计数据成功",
-                data: data
-            })
+                let images = [];
+                let comments = [];
+                for (let t of tasks) {
+                    const t_id = t.id;
+                    t.images = await Image.getImagesByTId(t_id);
+                    t.comments = await Comment.getCommentByTId(t_id);
+                    if (t.images && t.images.length) {
+                        images = images.concat(t.images);
+                    }
+                    if (t.comments && t.comments.length) {
+                        comments = comments.concat(t.comments);
+                    }
+                }
+                const data = {
+                    tf_name: task_flow.tf_name,
+                    tf_describe: task_flow.tf_describe,
+                    members_count: tf_members.length,
+                    images: images,
+                    task_flow: {
+                        all: tasks.length,
+                        completed: tasks.filter(t => t.is_completed === 1).length,
+                        delay: tasks.filter(t => t.is_completed === 2).length,
+                        continues: tasks.filter(t => t.is_completed === 0).length
+                    },
+                    comments: comments,
+                    members: members,
+                    tasks: []
+                }
+                res.json({
+                    msg: "获得任务流统计数据成功",
+                    data: data
+                });
+            } catch (e) { console.log(e); res.json({ errMsg: "获得任务流统计数据失败" }) }
+
         })
+
     }).catch(err => {
         console.log(err);
         return res.json({ errMsg: "获得任务流统计数据失败" })
