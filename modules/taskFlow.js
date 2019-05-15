@@ -4,13 +4,14 @@ const Task = require('./task');
 const taskFlow = {};
 
 
-
+// 检测该用户是不是属于该任务流
 taskFlow.checkUser = function (tf_id, u_id) {
     const sql = `select * from user_taskflow where tf_id='${tf_id}' and u_id='${u_id}'`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
     })
 }
+
 /**
  * 通过u_id 获得tf
  * 返回一个列表
@@ -199,6 +200,15 @@ taskFlow.breakTaskFlow = function (tf_id) {
     // 删除子任务
     // 删除任务流
     const sql = `CALL break_task_flow('${tf_id}')`;
+    return new Promise((resolve, reject) =>
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
+}
+
+
+taskFlow.getAllMemberTaskStatus = function (u_id, t_ids) {
+    const arr = t_ids.map(id => `'${id}'`);
+    const _str = arr.join(',');
+    const sql = `select * from user_task left join user on user.id = user_task.u_id where u_id='${u_id}' and t_id in (${_str})`;
     return new Promise((resolve, reject) =>
         dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
 }

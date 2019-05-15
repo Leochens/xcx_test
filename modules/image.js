@@ -10,6 +10,7 @@ Image.getImagesByTId = function (t_id) {
 }
 
 
+
 Image.addImage = function (img) {
     const { id, t_id, u_id, url } = img;
     const sql = `replace into image values('${id}','${t_id}','${u_id}','${url}')`;

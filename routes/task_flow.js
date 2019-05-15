@@ -286,8 +286,64 @@ router.delete(url + '/:tf_id/members/:delete_user_id', function (req, res) {
 router.delete(url + "/break/:tf_id", function (req, res) { // 假删除还是彻底删除呢?
     const u_id = req.params.u_id;
     const tf_id = req.params.tf_id;
-    TaskFlow.breakTaskFlow(tf_id).then(r=>res.json({msg:"解散任务流成功",data:r})).catch(err=>{console.log(err);res.json(ERR.BREAK_TF_FAILD)})
+    TaskFlow.breakTaskFlow(tf_id).then(r => res.json({ msg: "解散任务流成功", data: r })).catch(err => { console.log(err); res.json(ERR.BREAK_TF_FAILD) })
 }); // 解散一个任务流
 
+
+// 获得任务流的统计数据
+const task_flow_data = '/users/:u_id/task_flows/:tf_id/data';
+router.get(task_flow_data, function (req, res) {
+    const tf_id = req.params.tf_id;
+    const u_id = req.params.u_id;
+    TaskFlow.checkUser(tf_id, u_id).then(r => {
+        if (!r.length) return res.json({ msg: "您不是该任务流的成员,无权获得数据" });
+        // 获取数据
+        TaskFlow.getTaskFlowByTFId(tf_id).then(async function ([task_flow]) {
+            const tasks = await Task.getTasksByTfId(tf_id);
+            const task_ids = tasks.map(task => task.id);
+            const tf_members = await User.getUsersByTFId(tf_id);
+            const tf_members_ids = tf_members.map(m => m.id);
+            const members = [];
+            for (let uid of tf_members_ids) { // 获得人员的状态
+                const status = await TaskFlow.getAllMemberTaskStatus(uid, task_ids);
+                members.push({
+                    nick_name: status[0].nick_name,
+                    all: status.length,
+                    break: status.filter(st => st.user_status === 0).length,
+                    completed: status.filter(st => st.user_status === 1).length
+                })
+            }
+            let images = [];
+            for (let t of tasks) {
+                const t_id = t.id;
+                t.images = await Image.getImagesByTId(t_id);
+                if (t.images && t.images.length) {
+                    images = images.concat(t.images);
+                }
+            }
+            const data = {
+                tf_name: task_flow.tf_name,
+                tf_describe: task_flow.tf_describe,
+                members_count: tf_members.length,
+                images: images,
+                task_flow: {
+                    all: tasks.length,
+                    completed: tasks.filter(t => t.is_completed === 1).length,
+                    delay: tasks.filter(t => t.is_completed === 2).length,
+                    continues: tasks.filter(t => t.is_completed === 0).length
+                },
+                members: members,
+                tasks: []
+            }
+            res.json({
+                msg: "获得任务流统计数据成功",
+                data: data
+            })
+        })
+    }).catch(err => {
+        console.log(err);
+        return res.json({ errMsg: "获得任务流统计数据失败" })
+    })
+})
 
 module.exports = router;
