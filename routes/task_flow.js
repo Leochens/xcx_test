@@ -244,6 +244,10 @@ router.delete(url + '/:tf_id', async function (req, res) {
         return res.json(ERR.TF_DELETE_FAILD)
     })
 })
+
+/**
+ * 剔除一个成员
+ */
 router.delete(url + '/:tf_id/members/:delete_user_id', async function (req, res) {
     const u_id = req.params.u_id;
     const tf_id = req.params.tf_id;
@@ -264,25 +268,6 @@ router.delete(url + '/:tf_id/members/:delete_user_id', async function (req, res)
     })
 })
 
-router.delete(url + '/:tf_id/members/:delete_user_id', function (req, res) {
-    const u_id = req.params.u_id;
-    const tf_id = req.params.tf_id;
-    const delete_user_id = req.params.delete_user_id;
-    if (!u_id || !tf_id || !delete_user_id) { return res.json(ERR.MISSING_ARGUMENT) };
-    // TODO:给被踢的人发消息 同时记录日志
-
-    TaskFlow.deleteTaskFlow(delete_user_id, tf_id).then(function (flag) {
-        Task.deleteTaskMember(tf_id, delete_user_id).then(r => { // 删除一个任务流时 要把他的子任务中的该成员也删掉 注意在task页面会有bug
-            return res.json({
-                msg: flag.affectedRows ? "删除成功" : "删除失败,tf_id:" + tf_id + "不存在"
-            })
-        }).catch(err => { console.log(err); return res.json(ERR.TF_DELETE_FAILD) })
-
-    }).catch(function (err) {
-        console.log(err);
-        return res.json(ERR.TF_DELETE_FAILD)
-    })
-})
 router.delete(url + "/break/:tf_id", function (req, res) { // 假删除还是彻底删除呢?
     const u_id = req.params.u_id;
     const tf_id = req.params.tf_id;

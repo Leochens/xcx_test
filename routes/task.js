@@ -182,7 +182,14 @@ router.post(break_url, function (req, res) {
     const break_reason = req.body.break_reason;
     const u_id = req.body.u_id;
     console.log("break_reason=>", break_reason);
+
     Task.applyTakeBreak(t_id, u_id, break_reason).then(flag => {
+        // TODO 发消息
+        Task.getTaskById(t_id).then(([task]) => {
+            const tf_id = task.tf_id;
+            messageControl.memberTakeBreak(tf_id, t_id, { u_id, break_reason });
+            
+        }).catch(err => console.log(err));
         res.json({
             msg: "请假请求成功"
         })

@@ -30,9 +30,7 @@ message.addMessage = function (msg) {
         dbQuery(sql).then(res => resolve(m_id)).catch(err => reject(err));
     })
 }
-
 message.addMessageToUsers = function (msg, u_ids) {
-
     const values = u_ids.map(u_id => [
         `${genId.genUniqueId()}`,
         `${msg.content}`,
