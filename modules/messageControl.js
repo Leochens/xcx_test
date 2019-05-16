@@ -354,7 +354,17 @@ function memberQuit(tf_id, u_id) {
         toLeader(tf_id, msg);
     }).catch(err => console.log(err));
 }
-
+// 剔除成员
+function tickMember(tf_id, u_id) {
+    User.getUserInfoById(u_id).then(([user]) => {
+        if (!user) return;
+        const msg = {
+            content: `成员 ${user.nick_name} 已被移出任务流`,
+            tf_id
+        }
+        toAll(tf_id, msg);
+    }).catch(err => console.log(err));
+}
 // 任务流解散
 function taskFlowBreak(tf_id) {
     TaskFlow.getTaskFlowByTFId(tf_id).then(([task_flow]) => {
@@ -369,6 +379,7 @@ function taskFlowBreak(tf_id) {
 
 module.exports = {
     memberQuit,
+    tickMember,
     taskFlowBreak,
     createNewTaskFlow,
     completeTask,
