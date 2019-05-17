@@ -63,10 +63,10 @@ router.get(single, function (req, res) {
     Task.getTaskById(t_id).then(async _task => {
         console.log(t_id);
         const task = _task.pop();
-        task.members = await User.getUsersByTId(t_id);
-        task.comments = await Comment.getCommentByTId(t_id);
-        task.status_map = await Task.getStatusMapByTId(t_id);
-        task.images = await Image.getImagesByTId(t_id);
+        task.members = await User.getUsersByTId(t_id || []);
+        task.comments = await Comment.getCommentByTId(t_id) || [];
+        task.status_map = await Task.getStatusMapByTId(t_id) || [];
+        task.images = await Image.getImagesByTId(t_id) || [];
         res.json({
             msg: "获取成功",
             data: [task]

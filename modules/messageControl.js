@@ -373,7 +373,7 @@ function taskBreakFailed(t_id, apply_u_id, refuse_reason) {
             }
 
             toSingle(apply_u_id, msg, function (apply_u_id) {
-                sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `${task_flow.tf_name}[${task.t_name}] 请假失败:${refuse_reason}`]);
+                sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `子任务[${task.t_name}] 请假失败:${refuse_reason}`]);
             });
         }).catch(err => console.log(err))
     }).catch(err => console.log(err));
