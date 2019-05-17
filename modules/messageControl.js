@@ -316,32 +316,44 @@ function memberTakeBreak(tf_id, t_id, brk) {
 // 请假成功 给请假人发
 function takeBreakSuccess(t_id, apply_u_id) {
     const template_id = 'S2Qln3AkKzwmij_KCQuCCPdGATFMOWeVVL4BnSAGpRQ';
-    User.getUserInfoById(apply_u_id).then(([user]) => {
-        if (!user) return;
-        const msg = {
-            content: `请假成功`,
-            t_id: t_id
-        }
-        toSingle(apply_u_id, msg, function (apply_u_id) {
-            sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `${task_flow.tf_name}[${task.t_name}] 请假成功`]);
-        });
-    });
+    Task.getTaskById(t_id).then(([task]) => {
+        if (!task) return console.log("task为空 在messageControl => taksBresak...")
+        const tf_id = task.tf_id;
+        User.getUserInfoById(apply_u_id).then(([user]) => {
+            if (!user) return;
+            const msg = {
+                content: `请假成功`,
+                t_id: t_id,
+                tf_id: tf_id
+            }
+            toSingle(apply_u_id, msg, function (apply_u_id) {
+                sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `${task_flow.tf_name}[${task.t_name}] 请假成功`]);
+            });
+        }).catch(err => console.log(err));
+    }).catch(err => console.log(err));
+
 }
 
 // 请假失败 给请假人发
 function taskBreakFailed(t_id, apply_u_id, refuse_reason) {
     const template_id = 'S2Qln3AkKzwmij_KCQuCCPdGATFMOWeVVL4BnSAGpRQ';
-    User.getUserInfoById(apply_u_id).then(([user]) => {
-        if (!user) return;
-        const msg = {
-            content: `请假失败,拒绝原因:${refuse_reason}`,
-            t_id: t_id
-        }
+    Task.getTaskById(t_id).then(([task]) => {
+        if (!task) return console.log("task为空 在messageControl => taksBresak...")
+        const tf_id = task.tf_id;
+        User.getUserInfoById(apply_u_id).then(([user]) => {
+            if (!user) return;
+            const msg = {
+                content: `请假失败,拒绝原因:${refuse_reason}`,
+                t_id: t_id,
+                tf_id: tf_id
+            }
 
-        toSingle(apply_u_id, msg, function (apply_u_id) {
-            sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `${task_flow.tf_name}[${task.t_name}] 请假失败:${refuse_reason}`]);
-        });
-    });
+            toSingle(apply_u_id, msg, function (apply_u_id) {
+                sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `${task_flow.tf_name}[${task.t_name}] 请假失败:${refuse_reason}`]);
+            });
+        }).catch(err => console.log(err))
+    }).catch(err => console.log(err));
+
 }
 // 成员退出
 function memberQuit(tf_id, u_id) {
@@ -378,7 +390,7 @@ function taskFlowBreak(tf_id) {
     }).catch(err => console.log(err));
 }
 
-function taskLeaderTransfer(tf_id, nick_name) {
+function taskFlowLeaderTransfer(tf_id, nick_name) {
     const msg = {
         content: `负责人更改为:${nick_name}`,
         tf_id: tf_id
@@ -399,7 +411,7 @@ module.exports = {
     memberTakeBreak,
     taskFlowChange,
     joinInNewTaskFlow,
-    taskLeaderTransfer
+    taskFlowLeaderTransfer
 }
 
 

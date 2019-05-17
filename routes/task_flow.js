@@ -136,6 +136,7 @@ router.put(url + '/:tf_id/transfer', function (req, res) {
         if (!user) res.json(ERR.TF_UPDATE_FAILD);
         TaskFlow.transferLeader(tf_id, u_id, new_leader_id).then(r => {
             Log.logTaskFlow(tf_id, `负责人更改为${user.nick_name}`).catch(err => console.log(err));
+            messageControl.taskFlowLeaderTransfer(tf_id, user.nick_name);
             res.json({
                 msg: "负责人更改成功"
             })
