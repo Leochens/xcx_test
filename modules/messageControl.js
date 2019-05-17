@@ -351,7 +351,7 @@ function takeBreakSuccess(t_id, apply_u_id) {
                 tf_id: tf_id
             }
             toSingle(apply_u_id, msg, function (apply_u_id) {
-                sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `${task_flow.tf_name}[${task.t_name}] 请假成功`]);
+                sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `子任务[${task.t_name}] 请假成功`]);
             });
         }).catch(err => console.log(err));
     }).catch(err => console.log(err));
