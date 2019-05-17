@@ -243,7 +243,7 @@ function completeTaskFlow(tf_id) {
         if (!task_flow) return;
 
         const msg = {
-            content: `任务流 ${task_flow.tf_name} 已完成`,
+            content: `任务流 ${task_flow.tf_name} 已提前完成`,
             tf_id
         }
         toAll(tf_id, msg);
@@ -329,7 +329,7 @@ function takeBreakSuccess(t_id, apply_u_id) {
 }
 
 // 请假失败 给请假人发
-function taskBreakFailed(apply_u_id, refuse_reason) {
+function taskBreakFailed(t_id, apply_u_id, refuse_reason) {
     const template_id = 'S2Qln3AkKzwmij_KCQuCCPdGATFMOWeVVL4BnSAGpRQ';
     User.getUserInfoById(apply_u_id).then(([user]) => {
         if (!user) return;
@@ -378,6 +378,14 @@ function taskFlowBreak(tf_id) {
     }).catch(err => console.log(err));
 }
 
+function taskLeaderTransfer(tf_id, nick_name) {
+    const msg = {
+        content: `负责人更改为:${nick_name}`,
+        tf_id: tf_id
+    }
+    toAll(tf_id, msg);
+}
+
 module.exports = {
     memberQuit,
     tickMember,
@@ -390,7 +398,8 @@ module.exports = {
     taskBreakFailed,
     memberTakeBreak,
     taskFlowChange,
-    joinInNewTaskFlow
+    joinInNewTaskFlow,
+    taskLeaderTransfer
 }
 
 

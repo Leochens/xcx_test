@@ -150,8 +150,12 @@ router.put(url + '/:tf_id/transfer', function (req, res) {
  * 子任务不能做了
  */
 router.put(url + '/:tf_id/finish', function (req, res) {
+
     const tf_id = req.params.tf_id;
-    TaskFlow.updateTaskFlowField(tf_id, 'is_completed', 1).then(r => res.json({ msg: "结束任务流成功" })).catch(err => res.json(ERR.FINISH_TF_FAILD))
+    TaskFlow.updateTaskFlowField(tf_id, 'is_completed', 1).then(r => {
+        messageControl.completeTaskFlow(tf_id); // 发提前完成的消息
+        res.json({ msg: "结束任务流成功" });
+    }).catch(err => res.json(ERR.FINISH_TF_FAILD))
 })
 /**
  * 获取u_id对应的tfs
@@ -234,6 +238,7 @@ router.delete(url + '/:tf_id', async function (req, res) {
 
     TaskFlow.deleteTaskFlow(u_id, tf_id).then(function (flag) {
         Task.deleteTaskMember(tf_id, u_id).then(r => { // 删除一个任务流时 要把他的子任务中的该成员也删掉 注意在task页面会有bug
+            messageControl.memberQuit(tf_id, u_id); // 发成员退出通知
             return res.json({
                 msg: flag.affectedRows ? "删除成功" : "删除失败,tf_id:" + tf_id + "不存在"
             })
@@ -257,6 +262,7 @@ router.delete(url + '/:tf_id/members/:delete_user_id', async function (req, res)
 
     TaskFlow.deleteTaskFlow(delete_user_id, tf_id).then(function (flag) {
         Task.deleteTaskMember(tf_id, delete_user_id).then(r => { // 删除一个任务流时 要把他的子任务中的该成员也删掉 注意在task页面会有bug
+            messageControl.tickMember(tf_id, delete_user_id); // 发剔除通知
             return res.json({
                 msg: flag.affectedRows ? "删除成功" : "删除失败,tf_id:" + tf_id + "不存在"
             })
@@ -271,7 +277,10 @@ router.delete(url + '/:tf_id/members/:delete_user_id', async function (req, res)
 router.delete(url + "/break/:tf_id", function (req, res) { // 假删除还是彻底删除呢?
     const u_id = req.params.u_id;
     const tf_id = req.params.tf_id;
-    TaskFlow.breakTaskFlow(tf_id).then(r => res.json({ msg: "解散任务流成功", data: r })).catch(err => { console.log(err); res.json(ERR.BREAK_TF_FAILD) })
+    TaskFlow.breakTaskFlow(tf_id).then(r => {
+        messageControl.taskFlowBreak(tf_id); // 发解散通知
+        res.json({ msg: "解散任务流成功", data: r });
+    }).catch(err => { console.log(err); res.json(ERR.BREAK_TF_FAILD) })
 }); // 解散一个任务流
 
 

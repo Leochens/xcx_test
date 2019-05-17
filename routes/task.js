@@ -207,12 +207,15 @@ router.put(break_url, function (req, res) {
     const apply_user_id = req.body.apply_user_id;
     const u_id = req.body.u_id;
 
-    if (!u_id) return res.json(ERR.MISSING_ARGUMENT);
+    if (!u_id || !apply_user_id || !t_id) return res.json(ERR.MISSING_ARGUMENT);
     const refuse_reason = req.body.refuse_reason;
 
     // 
     if (refuse_reason) { // 拒绝请假
+        console.log(refuse_reason)
         Task.refuseTakeBreak(t_id, apply_user_id, refuse_reason).then(flag => {
+
+            messageControl.taskBreakFailed(t_id, apply_user_id, refuse_reason); // 给任务人发结果
             res.json({
                 msg: "拒绝请假成功"
             })
@@ -222,7 +225,9 @@ router.put(break_url, function (req, res) {
     } else {  // 同意请假
         Task.allowTakeBreak(t_id, apply_user_id).then(flag => {
             User.getUserInfoById(apply_user_id).then(([user]) => {
+
                 Log.logTask(t_id, `任务人${user.nick_name}已请假`).catch(err => console.log(err));
+                messageControl.takeBreakSuccess(t_id, apply_user_id) // 给任务人发结果
             }).catch(err => console.log(err));
             res.json({
                 msg: "同意请假成功"
