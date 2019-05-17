@@ -199,4 +199,11 @@ task.deleteTaskMember = function (tf_id, u_id) {
         }).catch(err => reject(err)))
 }
 
+
+
+task.checkUser = function (u_id, t_id) {
+    const sql = `select * from user_task where u_id = '${u_id}' and t_id = '${t_id}'`;
+    return new Promise((resolve, reject) =>
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
+}
 module.exports = task;

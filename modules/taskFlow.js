@@ -59,6 +59,14 @@ taskFlow.getTaskFlowByTFId = function (tf_id) {
         }).catch(err => reject(err));
     })
 }
+taskFlow.getTaskFlowByTFIdAndUId = function (tf_id, u_id) {
+    const sql = `SELECT task_flow.id,tf_name,tf_describe,is_completed,begin_time,end_time,leader_id,nick_name,role,category,invite,avatar_url from task_flow LEFT JOIN user_taskflow on task_flow.id = user_taskflow.tf_id LEFT JOIN user on user_taskflow.u_id = user.id where task_flow.id = '${tf_id}' and user_taskflow.u_id = '${u_id}'`;
+    return new Promise((resolve, reject) => {
+        dbQuery(sql).then(tf => {
+            resolve(tf);
+        }).catch(err => reject(err));
+    })
+}
 
 /**
  * 更新tf的信息 只能leader来操作  全量更新

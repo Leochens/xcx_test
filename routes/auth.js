@@ -44,8 +44,8 @@ router.post('/auth', (req, res) => {
         if (!error && response.statusCode == 200) {
             if (data.session_key && data.openid) {
                 console.log("微信auth返回的data=>", data);
-                req.session.user = data;
                 User.insertUserByOpenId(data.openid).then(function (u_id) {
+                    req.session.user = { ...data, u_id };
                     console.log("用户正在登陆，新老用户都可以获得一个u_id=>", u_id);
                     res.json({
                         SID: req.sessionID,

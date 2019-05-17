@@ -54,6 +54,8 @@
  * 90006    获得审核列表失败
  * 90007    获得日志失败
  * 90008    该成员已存在
+ * 90009    session不存在
+ * 90010    你不是其中成员,无权查看
  */
 
 const ERR = {
@@ -245,6 +247,14 @@ const ERR = {
     ALREADY_HAVE_THIS_USER: {
         errCode: 90008,
         errMsg: '该成员已存在'
+    },
+    NO_SESSION: {
+        errCode: 90009,
+        errMsg: 'session不存在'
+    },
+    NO_AUTH:{
+        errCode: 90010,
+        errMsg:"你不是其中成员,无权查看"
     }
 
 }

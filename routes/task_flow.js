@@ -224,6 +224,34 @@ router.get(url + "/simple", function (req, res) {
         res.json(ERR.TF_QUERY_FAILD);
     })
 })
+// 获得一条task_flow
+router.get(url + '/:tf_id', function (req, res) {
+    const u_id = req.params.u_id;
+    const tf_id = req.params.tf_id;
+    TaskFlow.getTaskFlowByTFIdAndUId(tf_id, u_id).then(async function ([tf]) {
+        const tf_id = tf.id;
+        const tasks = await Task.getTasksByTfId(tf_id) || [];
+        for (let task of tasks) {
+            const t_id = task.id;
+            task.member_cnt = (await User.getUsersByTId(t_id) || []).length;
+            task.comment_cnt = (await Comment.getCommentByTId(t_id) || []).length;
+            task.status_map = await Task.getStatusMapByTId(t_id) || [];
+            task.image_cnt = (await Image.getImagesByTId(t_id) || []).length;
+        }
+        tf.taskStatus = {
+            all: tasks.length,
+            complete: tasks.filter(t => t.is_completed === 1).length
+        }
+
+        const members = await User.getUsersByTFId(tf_id) || [];
+        tf.tasks = tasks;
+        tf.members = members;
+        res.json({
+            msg: "获得tf成功",
+            data: [tf]
+        })
+    }).catch(err => { console.log(err); res.json(ERR.TF_QUERY_FAILD); });
+})
 
 /**
  * 删除一个tf

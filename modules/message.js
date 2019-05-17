@@ -23,13 +23,14 @@ message.addMessage = function (msg) {
         '${msg.create_time || formatTime(new Date())}',
         0,
         '${msg.to_user_id}',
-        ${msg.tf_id ? "'" + msg.tf_id + "'" : null}
+        ${msg.tf_id ? "'" + msg.tf_id + "'" : null},
         ${msg.t_id ? "'" + msg.t_id + "'" : null}
         )`;
     return new Promise((resolve, reject) => {
         dbQuery(sql).then(res => resolve(m_id)).catch(err => reject(err));
     })
 }
+
 message.addMessageToUsers = function (msg, u_ids) {
     const values = u_ids.map(u_id => [
         `${genId.genUniqueId()}`,
