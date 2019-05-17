@@ -114,9 +114,10 @@ const addMultiple = function (msg, u_ids) {
 
 
 // 给单个人发消息
-const toSingle = function (u_id, msg) {
+const toSingle = function (u_id, msg, templateMsg) {
     msg.u_id = u_id;
     msg.to_user_id = u_id;
+    if (templateMsg) templateMsg(u_id);
     add(msg);
 }
 
@@ -321,7 +322,7 @@ function memberTakeBreak(tf_id, t_id, brk) {
                     t_id: t_id
                 }
                 const msg = {
-                    content: `请假申请成功`,
+                    content: `请假已申请:原因为${break_reason}`,
                     tf_id: tf_id,
                     t_id: t_id
                 }
