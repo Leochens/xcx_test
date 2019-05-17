@@ -278,10 +278,17 @@ router.delete(url + '/:tf_id/members/:delete_user_id', async function (req, res)
 router.delete(url + "/break/:tf_id", function (req, res) { // 假删除还是彻底删除呢?
     const u_id = req.params.u_id;
     const tf_id = req.params.tf_id;
-    messageControl.taskFlowBreak(tf_id); // 发解散通知
-    TaskFlow.breakTaskFlow(tf_id).then(r => {
-        res.json({ msg: "解散任务流成功", data: r });
+    TaskFlow.getTaskFlowByTFId(tf_id).then(([task_flow]) => {
+        User.getUsersByTFId(tf_id).then(users => {
+            const u_ids = users.map(user => user.id);
+            TaskFlow.breakTaskFlow(tf_id).then(r => {
+                messageControl.taskFlowBreak(task_flow.tf_name, u_ids); // 发解散通知
+                res.json({ msg: "解散任务流成功", data: r });
+            }).catch(err => { console.log(err); res.json(ERR.BREAK_TF_FAILD) })
+        }).catch(err => { console.log(err); res.json(ERR.BREAK_TF_FAILD) });
     }).catch(err => { console.log(err); res.json(ERR.BREAK_TF_FAILD) })
+
+
 }); // 解散一个任务流
 
 

@@ -408,15 +408,12 @@ function tickMember(tf_id, u_id) {
     }).catch(err => console.log(err));
 }
 // 任务流解散
-function taskFlowBreak(tf_id) {
-    TaskFlow.getTaskFlowByTFId(tf_id).then(([task_flow]) => {
-        if (!task_flow) return;
-        const msg = {
-            content: `任务流 ${task_flow.tf_name} 已解散`,
-            tf_id: tf_id
-        }
-        toAll(tf_id, msg);
-    }).catch(err => console.log(err));
+function taskFlowBreak(tf_name, u_ids) {
+    if (!tf_name || !Array.isArray(u_ids)) return console.log("缺少tf_name或u_ids");
+    const msg = {
+        content: `任务流 ${tf_name} 已解散`
+    }
+    addMultiple(msg, u_ids);
 }
 
 function taskFlowLeaderTransfer(tf_id, nick_name) {

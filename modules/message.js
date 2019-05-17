@@ -23,7 +23,7 @@ message.addMessage = function (msg) {
         '${msg.create_time || formatTime(new Date())}',
         0,
         '${msg.to_user_id}',
-        '${msg.tf_id}',
+        ${msg.tf_id ? "'" + msg.tf_id + "'" : null}
         ${msg.t_id ? "'" + msg.t_id + "'" : null}
         )`;
     return new Promise((resolve, reject) => {
