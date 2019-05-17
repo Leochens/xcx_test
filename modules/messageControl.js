@@ -316,7 +316,7 @@ function memberTakeBreak(tf_id, t_id, brk) {
             Task.getTaskById(t_id).then(([task]) => {
                 if (!task) return;
                 const leader_msg = {
-                    content: `${task_flow.tf_name}[${task.t_name}]:${nick_name} 申请请假:${break_reason}`,
+                    content: `${nick_name} 申请请假:${break_reason}`,
                     to_user_id: leader_id,
                     tf_id: tf_id,
                     t_id: t_id
@@ -343,17 +343,20 @@ function takeBreakSuccess(t_id, apply_u_id) {
     Task.getTaskById(t_id).then(([task]) => {
         if (!task) return console.log("task为空 在messageControl => taksBresak...")
         const tf_id = task.tf_id;
-        User.getUserInfoById(apply_u_id).then(([user]) => {
-            if (!user) return;
-            const msg = {
-                content: `请假成功`,
-                t_id: t_id,
-                tf_id: tf_id
-            }
-            toSingle(apply_u_id, msg, function (apply_u_id) {
-                sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `子任务[${task.t_name}] 请假成功`]);
-            });
+        TaskFlow.getTaskFlowByTFId(tf_id).then(([task_flow]) => {
+            User.getUserInfoById(apply_u_id).then(([user]) => {
+                if (!user) return;
+                const msg = {
+                    content: `请假成功`,
+                    t_id: t_id,
+                    tf_id: tf_id
+                }
+                toSingle(apply_u_id, msg, function (apply_u_id) {
+                    sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `${task_flow.tf_name}[${task.t_name}] 请假成功`]);
+                });
+            }).catch(err => console.log(err));
         }).catch(err => console.log(err));
+
     }).catch(err => console.log(err));
 
 }
@@ -364,18 +367,20 @@ function taskBreakFailed(t_id, apply_u_id, refuse_reason) {
     Task.getTaskById(t_id).then(([task]) => {
         if (!task) return console.log("task为空 在messageControl => taksBresak...")
         const tf_id = task.tf_id;
-        User.getUserInfoById(apply_u_id).then(([user]) => {
-            if (!user) return;
-            const msg = {
-                content: `请假失败,拒绝原因:${refuse_reason}`,
-                t_id: t_id,
-                tf_id: tf_id
-            }
+        TaskFlow.getTaskFlowByTFId(tf_id).then(([task_flow]) => {
+            User.getUserInfoById(apply_u_id).then(([user]) => {
+                if (!user) return;
+                const msg = {
+                    content: `子任务[${task.t_name}] 请假失败,拒绝原因:${refuse_reason}`,
+                    t_id: t_id,
+                    tf_id: tf_id
+                }
 
-            toSingle(apply_u_id, msg, function (apply_u_id) {
-                sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `子任务[${task.t_name}] 请假失败:${refuse_reason}`]);
-            });
-        }).catch(err => console.log(err))
+                toSingle(apply_u_id, msg, function (apply_u_id) {
+                    sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `${task_flow.tf_name}[${task.t_name}] 请假失败:${refuse_reason}`]);
+                });
+            }).catch(err => console.log(err))
+        }).catch(err => console.log(err));
     }).catch(err => console.log(err));
 
 }
