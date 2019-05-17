@@ -354,6 +354,7 @@ function memberQuit(tf_id, u_id) {
         toLeader(tf_id, msg);
     }).catch(err => console.log(err));
 }
+
 // 剔除成员
 function tickMember(tf_id, u_id) {
     User.getUserInfoById(u_id).then(([user]) => {

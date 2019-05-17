@@ -19,6 +19,7 @@ Image.addImage = function (img) {
     })
 }
 
+
 module.exports = Image;
 
 

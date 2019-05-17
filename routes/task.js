@@ -188,7 +188,7 @@ router.post(break_url, function (req, res) {
         Task.getTaskById(t_id).then(([task]) => {
             const tf_id = task.tf_id;
             messageControl.memberTakeBreak(tf_id, t_id, { u_id, break_reason });
-            
+
         }).catch(err => console.log(err));
         res.json({
             msg: "请假请求成功"
@@ -204,12 +204,15 @@ router.post(break_url, function (req, res) {
  */
 router.put(break_url, function (req, res) {
     const t_id = req.params.t_id;
+    const apply_user_id = req.body.apply_user_id;
     const u_id = req.body.u_id;
+
     if (!u_id) return res.json(ERR.MISSING_ARGUMENT);
     const refuse_reason = req.body.refuse_reason;
 
+    // 
     if (refuse_reason) { // 拒绝请假
-        Task.refuseTakeBreak(t_id, u_id, refuse_reason).then(flag => {
+        Task.refuseTakeBreak(t_id, apply_user_id, refuse_reason).then(flag => {
             res.json({
                 msg: "拒绝请假成功"
             })
@@ -217,8 +220,8 @@ router.put(break_url, function (req, res) {
             res.json(ERR.REFUSE_BREAK_FAILD);
         })
     } else {  // 同意请假
-        Task.allowTakeBreak(t_id, u_id).then(flag => {
-            User.getUserInfoById(u_id).then(([user]) => {
+        Task.allowTakeBreak(t_id, apply_user_id).then(flag => {
+            User.getUserInfoById(apply_user_id).then(([user]) => {
                 Log.logTask(t_id, `任务人${user.nick_name}已请假`).catch(err => console.log(err));
             }).catch(err => console.log(err));
             res.json({
