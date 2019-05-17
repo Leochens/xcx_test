@@ -340,12 +340,14 @@ router.put(edit_url + '/end_time', function (req, res) {
         return res.json(ERR.TASK_UPDATE_FAILD);
     })
 })
+// 新增新成员
 router.put(edit_url + '/members', function (req, res) {
     const key = 'members';
     const t_id = req.params.t_id;
     const u_ids = JSON.parse(req.body.value);
     Task.addTaskMember(t_id, u_ids).then(r => {
-
+        Log.logTask(t_id, `已新增成员`);
+        messageControl.addTaskMember(t_id, u_ids);
         res.json({ msg: `新增${key}成功` })
     }).catch(err => {
         console.log(err);

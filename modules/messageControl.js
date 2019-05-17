@@ -9,6 +9,9 @@ const request = require('request');
 const { APP } = require('../config/config');
 const formatTime = require('../utils/formatTime');
 const timeWithoutSecond = require('../utils/timeWithoutSecond');
+
+
+
 const getToken = function () {
     const appId = APP.appID;
     const secret = APP.appSecret;
@@ -148,6 +151,15 @@ const toTaskMembers = function (t_id, msg, templateMsg) {
     }).catch(e => console.log(e));
 }
 
+// 给新加进来的子任务成员发消息
+const toNewTaskMembers = function (t_id, u_ids, msg, templateMsg) {
+    if (templateMsg) {
+        for (u_id in u_ids) {
+            templateMsg(u_id);
+        }
+    }
+    addMultiple(msg, u_ids);
+}
 // 给全部人员发消息
 const toAll = function (tf_id, msg) {
     User.getUsersByTFId(tf_id).then(users => {
@@ -161,8 +173,6 @@ const toAll = function (tf_id, msg) {
 }
 // 负责人创建了一个新的任务流
 function createNewTaskFlow(tf, u_id) {
-    // const sendMessage = function (touser,template_id,form_id,data) {
-
     const msg = {
         content: `您创建了任务流${tf.tf_name}`,
         to_user_id: u_id,
@@ -170,8 +180,21 @@ function createNewTaskFlow(tf, u_id) {
     }
     const template_id = '2yp1OS5xu86ZF0OKi2UtbGuyFaYu8hw_nmzZtuBN1qs'; // 任务接收通知
     sendTemplateMsg(u_id, template_id, [tf.tf_name, "leader", tf.tf_describe, formatTime(new Date(tf.end_time))], tf.leader_id);
-
     add(msg);
+}
+function addTaskMember(t_id, u_ids) {
+    Task.getTaskById(t_id).then(([task]) => {
+        const msg = {
+            content: `你有一个新的任务需要完成:${task.t_name}`,
+            t_id: t_id,
+            tf_id: task.tf_id
+        }
+        const template_id = 'XK5o2IztgPCHQricUusQXIGYHCTmGH3ExgB9UxCgTBs'; // 工作任务通知
+
+        toNewTaskMembers(t_id, u_ids, msg, function (u_id) {
+            sendTemplateMsg(u_id, template_id, [task.t_name, task.t_describe, formatTime(new Date(task.begin_time)), formatTime(new Date())]);
+        });
+    }).catch(err => console.log(err));
 }
 
 // 成员新加入一个任务流
@@ -411,7 +434,8 @@ module.exports = {
     memberTakeBreak,
     taskFlowChange,
     joinInNewTaskFlow,
-    taskFlowLeaderTransfer
+    taskFlowLeaderTransfer,
+    addTaskMember
 }
 
 
