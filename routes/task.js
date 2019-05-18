@@ -3,6 +3,7 @@ const router = express.Router();
 const ERR = require('../config/error');
 const checkSession = require('../utils/checkSession');
 const Task = require('../modules/task');
+const TaskFlow = require('../modules/taskFlow');
 const Comment = require('../modules/comment');
 const User = require('../modules/user');
 const Image = require('../modules/image');
@@ -62,24 +63,29 @@ router.get(single, function (req, res) {
     checkSession(req).then(userData => {
         console.log("userData", userData);
         const u_id = userData.u_id;
-        Task.checkUser(u_id, t_id).then(r => {
-            if (!r.length) return res.json(ERR.NO_AUTH); // 该用户不是该子任务的成员 无权查看
-            Task.getTaskById(t_id).then(async _task => {
-                const task = _task.pop();
-                task.members = await User.getUsersByTId(t_id || []);
-                task.comments = await Comment.getCommentByTId(t_id) || [];
-                task.status_map = await Task.getStatusMapByTId(t_id) || [];
-                task.images = await Image.getImagesByTId(t_id) || [];
-                res.json({
-                    msg: "获取成功",
-                    data: [task]
-                });
+        Task.getTaskById(t_id).then(async _task => {
+            const task = _task.pop();
+            if (!task) return res.json(ERR.NO_SUB_TASK);
+            TaskFlow.checkUser(task.tf_id, u_id).then(r => {
+                if (!r.length) return res.json(ERR.NO_AUTH); // 该用户不是该子任务的成员 无权查看
             }).catch(err => {
                 console.log(err);
                 return res.json(ERR.TASK_QUERY_BY_T_ID_FAILD);
-            })
+            });
+
+            task.members = await User.getUsersByTId(t_id || []);
+            task.comments = await Comment.getCommentByTId(t_id) || [];
+            task.status_map = await Task.getStatusMapByTId(t_id) || [];
+            task.images = await Image.getImagesByTId(t_id) || [];
+            res.json({
+                msg: "获取成功",
+                data: [task]
+            });
+        }).catch(err => {
+            console.log(err);
+            return res.json(ERR.TASK_QUERY_BY_T_ID_FAILD);
         })
-    }).catch(err => { console.log(err); res.json(ERR.NO_SESSION) })
+    })
 
 })
 

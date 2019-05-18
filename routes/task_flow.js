@@ -98,7 +98,7 @@ router.put(url, async function (req, res) {
                     Log.logTaskFlow(tf_id, `任务流截止日期由${formatTime(new Date(oet))} 被修改 ${formatTime(new Date(net))}`).catch(err => console.log(err));
                 }
                 res.json({
-                    errMsg: '更新成功',
+                    msg: '更新成功',
                     tf: newTf
                 })
             } catch (e) { console.log(e) }
@@ -229,11 +229,15 @@ router.get(url + '/:tf_id', function (req, res) {
     const u_id = req.params.u_id;
     const tf_id = req.params.tf_id;
     TaskFlow.getTaskFlowByTFIdAndUId(tf_id, u_id).then(async function ([tf]) {
+        console.log("tf=>",tf);
+        if(!tf) return res.json(res.json(ERR.TF_QUERY_FAILD))
         const tf_id = tf.id;
         const tasks = await Task.getTasksByTfId(tf_id) || [];
         for (let task of tasks) {
             const t_id = task.id;
-            task.member_cnt = (await User.getUsersByTId(t_id) || []).length;
+            const members = await User.getUsersByTId(t_id) || [];
+            task.member_cnt = members.length;
+            task.members = members;
             task.comment_cnt = (await Comment.getCommentByTId(t_id) || []).length;
             task.status_map = await Task.getStatusMapByTId(t_id) || [];
             task.image_cnt = (await Image.getImagesByTId(t_id) || []).length;

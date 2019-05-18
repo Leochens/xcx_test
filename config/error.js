@@ -32,6 +32,7 @@
  * 30010    同意请假失败
  * 30011    拒绝请假失败
  * 30012    根据u_id查询task失败
+ * 30013    任务不存在
  * 
  * -----------------4 comment相关 ---------------
  * 40001    评论失败
@@ -121,9 +122,9 @@ const ERR = {
         errCode: 20008,
         errMsg: '结束任务流失败'
     },
-    BREAK_TF_FAILD:{
+    BREAK_TF_FAILD: {
         errCode: 20009,
-        errMsg:"解散任务流失败"
+        errMsg: "解散任务流失败"
     },
 
 
@@ -178,6 +179,10 @@ const ERR = {
     TASK_QUERY_BY_U_ID_FAILD: {
         errCode: 30013,
         errMsg: '根据u_id查询task失败'
+    },
+    NO_SUB_TASK: {
+        errCode: 30014,
+        errMsg: '任务不存在'
     },
 
 
@@ -252,9 +257,9 @@ const ERR = {
         errCode: 90009,
         errMsg: 'session不存在'
     },
-    NO_AUTH:{
+    NO_AUTH: {
         errCode: 90010,
-        errMsg:"你不是其中成员,无权查看"
+        errMsg: "你不是其中成员,无权查看"
     }
 
 }
