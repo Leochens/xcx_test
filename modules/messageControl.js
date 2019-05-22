@@ -143,14 +143,14 @@ const toLeaderByTid = function (t_id, msg) {
         toLeader(tf_id, msg);
     })
 }
-
+// 这里有问题 发不了模板消息
 // 给子任务的成员发消息
 const toTaskMembers = function (t_id, msg, templateMsg) {
     Task.getStatusMapByTId(t_id).then(res => {
         const u_ids = res.map(sm => sm.u_id);
-
+        console.log("toTaskMembers",u_ids)
         if (templateMsg) {
-            for (u_id in u_ids) {
+            for (u_id of u_ids) {
                 templateMsg(u_id);
             }
         }
@@ -162,7 +162,7 @@ const toTaskMembers = function (t_id, msg, templateMsg) {
 // 给新加进来的子任务成员发消息
 const toNewTaskMembers = function (t_id, u_ids, msg, templateMsg) {
     if (templateMsg) {
-        for (u_id in u_ids) {
+        for (u_id of u_ids) {
             templateMsg(u_id);
         }
     }
