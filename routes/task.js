@@ -173,9 +173,10 @@ router.put(url, function (req, res) {
  * 删除一条task
  * 要做权限认证
  */
-router.delete(url, function (req, res) {
+router.delete(url + '/:t_id', function (req, res) {
     const { t_id, u_id } = req.body;
     if (!t_id || !u_id) return res.json(ERR.MISSING_ARGUMENT);
+    messageControl.deleteTask(t_id);// 发通知
     Task.deleteTask(t_id).then(flag => res.json(flag)).catch(err => {
         console.log(err);
         return res.json(ERR.TASK_DELETE_FAILD);
