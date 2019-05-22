@@ -40,7 +40,7 @@ message.addMessageToUsers = function (msg, u_ids) {
         u_id,
         msg.tf_id ? `${msg.tf_id}` : null,
         msg.t_id ? `${msg.t_id}` : null
-    ]);
+    ]) || [];
     const sql = `replace into message values ?`;
     return new Promise((resolve, reject) => {
         dbQuery(sql, values).then(res => resolve(res)).catch(err => reject(err));

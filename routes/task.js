@@ -176,11 +176,20 @@ router.put(url, function (req, res) {
 router.delete(url + '/:t_id', function (req, res) {
     const { t_id, u_id } = req.body;
     if (!t_id || !u_id) return res.json(ERR.MISSING_ARGUMENT);
-    messageControl.deleteTask(t_id);// 发通知
-    Task.deleteTask(t_id).then(flag => res.json(flag)).catch(err => {
+    messageControl.deleteTask(t_id).then(delTask => {
+        console.log("delTask", delTask);
+        Task.deleteTask(t_id).then(flag => {
+
+            return res.json({ msg: "删除成功" })
+        }).catch(err => {
+            console.log(err);
+            return res.json(ERR.TASK_DELETE_FAILD);
+        })
+    }).catch(err => {
         console.log(err);
         return res.json(ERR.TASK_DELETE_FAILD);
     })
+
 })
 
 

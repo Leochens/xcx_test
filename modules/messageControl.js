@@ -198,7 +198,7 @@ function addTaskMember(t_id, u_ids) {
             tf_id: task.tf_id
         }
         const template_id = TEMPLATE.START_TASK; // 工作任务通知
-
+        console.log("新增成员发消息")
         toNewTaskMembers(t_id, u_ids, msg, function (u_id) {
             sendTemplateMsg(u_id, template_id, [task.t_name, task.t_describe, formatTime(new Date(task.begin_time)), formatTime(new Date())]);
         });
@@ -432,21 +432,24 @@ function taskFlowLeaderTransfer(tf_id, nick_name) {
 }
 // 删除子任务
 function deleteTask(t_id) {
-    Task.getTaskById(t_id).then(([task]) => {
-        const t_name = task.t_name;
-        TaskFlow.getTaskFlowByTFId(task.tf_id).then(([tf]) => {
-            const tf_name = tf.tf_name;
-            const msg = {
-                content: `子任务${t_name}已被删除`,
-                tf_id: task.tf_id
-            }
-            const template_id = TEMPLATE.DELETE_TASK;
 
-            toTaskMembers(t_id, msg, function (apply_u_id) {
-                sendTemplateMsg(apply_u_id, template_id, [t_name, `所属任务流:${tf_name}`]);
-            });
-        }).catch(err => console.log(err));
-    }).catch(err => console.log(err));
+    return new Promise(function (resolve, reject) {
+        Task.getTaskById(t_id).then(([task]) => {
+            const t_name = task.t_name;
+            TaskFlow.getTaskFlowByTFId(task.tf_id).then(([tf]) => {
+                const tf_name = tf.tf_name;
+                const msg = {
+                    content: `子任务${t_name}已被删除`,
+                    tf_id: task.tf_id
+                }
+                const template_id = TEMPLATE.DELETE_TASK;
+                toTaskMembers(t_id, msg, function (apply_u_id) {
+                    sendTemplateMsg(apply_u_id, template_id, [t_name, `所属任务流:${tf_name}`]);
+                });
+                return resolve(true);
+            }).catch(err => { reject(err) });
+        }).catch(err => { reject(err) });
+    })
 }
 
 module.exports = {
