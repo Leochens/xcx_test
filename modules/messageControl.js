@@ -13,9 +13,11 @@ const TEMPLATE = {
     START_TASK_FLOW: '2yp1OS5xu86ZF0OKi2UtbGuyFaYu8hw_nmzZtuBN1qs',
     START_TASK: 'XK5o2IztgPCHQricUusQXIGYHCTmGH3ExgB9UxCgTBs',
     APPLY_TASK_BREAK: '31tTAhlJVGIDnKl_26dgPdQ9F7VqdFVgW3vHA8Gq3sM',
+    TASK_BREAK_SUCCESS: "tlOaSDs6dHvn-WzqRttN0m1qDjhfUXiNXyIsfqw3LQ4",
     TASK_BREAK_RESULT: "S2Qln3AkKzwmij_KCQuCCPdGATFMOWeVVL4BnSAGpRQ",
     COMPLETE_TASK: "Rz-yCqQKcjYqUD8m521GVu2I1xyjxnhW3hctG-B2pkI",
-    DELETE_TASK: "asPRDvAnPM_XjfXSA6gOOnfLzVll4xkY3mqTyV2gZnQ"
+    DELETE_TASK: "asPRDvAnPM_XjfXSA6gOOnfLzVll4xkY3mqTyV2gZnQ",
+    BREAK_TASK_FLOW: '17--CRH9SAWWQDmzLY3f4kpD82tFNQqi_SIxsUXJOX0'
 }
 
 
@@ -41,7 +43,7 @@ const getToken = function () {
     })
 }
 
-const sendMessage = function (touser, template_id, form_id, data, _page) {
+const sendMessage = function (touser, template_id, form_id, data, _page, noBigText) {
     const page = _page || "pages/index/index";
     getToken().then(token => {
         const url = `https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${token}`;
@@ -50,7 +52,6 @@ const sendMessage = function (touser, template_id, form_id, data, _page) {
             if (!error && response.statusCode == 200) {
                 console.log("模板消息成功=>", data);
             }
-            console.log("模板消息失败=>", error)
         }
         request({
             url: url,
@@ -62,7 +63,7 @@ const sendMessage = function (touser, template_id, form_id, data, _page) {
                 "page": page,
                 "form_id": form_id,
                 "data": data,
-                "emphasis_keyword": "keyword1.DATA"
+                "emphasis_keyword": noBigText ? '' : "keyword1.DATA"
             }
         }, callback);
     }).catch(err => {
@@ -84,7 +85,7 @@ const dataWrap = function (data) {
     return res;
 }
 // 发送模板消息
-const sendTemplateMsg = function (u_id, template_id, data, leader_id) {
+const sendTemplateMsg = function (u_id, template_id, data, leader_id, page, noBigText) {
     formId.getOne(u_id).then(fid => {
         User.getUserInfoById(u_id).then(user => {
             const u = user[0];
@@ -93,11 +94,11 @@ const sendTemplateMsg = function (u_id, template_id, data, leader_id) {
                 User.getUserInfoById(leader_id).then(([leader]) => {
                     data[leaderIndex] = leader.nick_name; // 昵称替换
                     const d = dataWrap(data);
-                    sendMessage(u.openid, template_id, fid, d);
+                    sendMessage(u.openid, template_id, fid, d, page, noBigText);
                 }).catch(err => console.log(err));
             } else {
                 const d = dataWrap(data);
-                sendMessage(u.openid, template_id, fid, d);
+                sendMessage(u.openid, template_id, fid, d, page, noBigText);
             }
         }).catch(err => { console.log(err) });
     }).catch(err => {
@@ -148,7 +149,7 @@ const toLeaderByTid = function (t_id, msg) {
 const toTaskMembers = function (t_id, msg, templateMsg) {
     Task.getStatusMapByTId(t_id).then(res => {
         const u_ids = res.map(sm => sm.u_id);
-        console.log("toTaskMembers",u_ids)
+        console.log("toTaskMembers", u_ids)
         if (templateMsg) {
             for (u_id of u_ids) {
                 templateMsg(u_id);
@@ -182,7 +183,7 @@ const toAll = function (tf_id, msg) {
 // 负责人创建了一个新的任务流
 function createNewTaskFlow(tf, u_id) {
     const msg = {
-        content: `您创建了任务流${tf.tf_name}`,
+        content: `您创建了任务流 [${tf.tf_name}]`,
         to_user_id: u_id,
         tf_id: tf.id
     }
@@ -193,12 +194,11 @@ function createNewTaskFlow(tf, u_id) {
 function addTaskMember(t_id, u_ids) {
     Task.getTaskById(t_id).then(([task]) => {
         const msg = {
-            content: `你有一个新的任务需要完成:${task.t_name}`,
+            content: `你有一个新的子任务需要完成 ${task.t_name}`,
             t_id: t_id,
             tf_id: task.tf_id
         }
         const template_id = TEMPLATE.START_TASK; // 工作任务通知
-        console.log("新增成员发消息")
         toNewTaskMembers(t_id, u_ids, msg, function (u_id) {
             sendTemplateMsg(u_id, template_id, [task.t_name, task.t_describe, formatTime(new Date(task.begin_time)), formatTime(new Date())]);
         });
@@ -211,7 +211,7 @@ function joinInNewTaskFlow(tf_id, u_id) {
 
         const tf = _tf[0];
         const msg = {
-            content: `您新加入了任务流:${tf.tf_name}`,
+            content: `您新加入了任务流 [${tf.tf_name}]`,
             to_user_id: u_id,
             tf_id: tf_id
         }
@@ -230,7 +230,7 @@ function createNewTask(t_id, u_ids) {
         const task = t[0];
         TaskFlow.getTaskFlowByTFId(task.tf_id).then(tf => {
             const msg = {
-                content: `你有一个新的任务需要完成:${task.t_name}`,
+                content: `你有一个新的子任务需要完成 ${task.t_name}`,
                 t_id: t_id,
                 tf_id: task.tf_id
             }
@@ -252,7 +252,7 @@ function completeTask(t_id) {
     Task.getTaskById(t_id).then(t => {
         const task = t[0];
         const msg = {
-            content: `子任务:${task.t_name} 已完成`,
+            content: `子任务 ${task.t_name} 已完成`,
             t_id: task.id,
             tf_id: task.tf_id
         }
@@ -271,7 +271,7 @@ function completeTaskFlow(tf_id) {
         if (!task_flow) return;
 
         const msg = {
-            content: `任务流 ${task_flow.tf_name} 已提前完成`,
+            content: `任务流 [${task_flow.tf_name}] 已提前完成`,
             tf_id
         }
         toAll(tf_id, msg);
@@ -283,7 +283,7 @@ function taskFlowChange(tf_id, oldTf, newTf) {
 
     const contents = [];
     if (oldTf.tf_name != newTf.tf_name) {
-        const content = `${newTf.tf_name} : 任务流名称由 ${oldTf.tf_name} 改为 ${newTf.tf_name}`;
+        const content = `${newTf.tf_name} : 任务流名称由 [${oldTf.tf_name}] 改为 [${newTf.tf_name}]`;
         contents.push(content)
     }
     if (oldTf.tf_describe != newTf.tf_describe) {
@@ -320,19 +320,19 @@ function memberTakeBreak(tf_id, t_id, brk) {
             Task.getTaskById(t_id).then(([task]) => {
                 if (!task) return;
                 const leader_msg = {
-                    content: `${nick_name} 申请请假:${break_reason}`,
+                    content: `${nick_name} 申请请假: ${break_reason}`,
                     to_user_id: leader_id,
                     tf_id: tf_id,
                     t_id: t_id
                 }
                 const msg = {
-                    content: `请假已申请:${break_reason}`,
+                    content: `请假已申请: ${break_reason}`,
                     tf_id: tf_id,
                     t_id: t_id
                 }
                 const template_id = TEMPLATE.APPLY_TASK_BREAK;
                 toLeader(tf_id, leader_msg, function (leader_id) {
-                    sendTemplateMsg(leader_id, template_id, [user.nick_name, break_reason, `${task_flow.tf_name}[${task.t_name}]`]);
+                    sendTemplateMsg(leader_id, template_id, [user.nick_name, break_reason, `所属任务流[${task_flow.tf_name}]\n所属子任务[${task.t_name}]`]);
                 });
 
                 toSingle(u_id, msg);// 给自己发一个请假消息
@@ -351,12 +351,12 @@ function takeBreakSuccess(t_id, apply_u_id) {
             User.getUserInfoById(apply_u_id).then(([user]) => {
                 if (!user) return;
                 const msg = {
-                    content: `请假成功`,
+                    content: `您的请假已成功`,
                     t_id: t_id,
                     tf_id: tf_id
                 }
                 toSingle(apply_u_id, msg, function (apply_u_id) {
-                    sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `${task_flow.tf_name}[${task.t_name}] 请假成功`]);
+                    sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `所属任务流[${task_flow.tf_name}]\n所属子任务[${task.t_name}]`], null, null, true);
                 });
             }).catch(err => console.log(err));
         }).catch(err => console.log(err));
@@ -381,7 +381,7 @@ function taskBreakFailed(t_id, apply_u_id, refuse_reason) {
                 }
 
                 toSingle(apply_u_id, msg, function (apply_u_id) {
-                    sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `${task_flow.tf_name}[${task.t_name}] 请假失败:${refuse_reason}`]);
+                    sendTemplateMsg(apply_u_id, template_id, [user.nick_name, `任务流[${task_flow.tf_name}][${task.t_name}] 请假失败:${refuse_reason}`], null, null, true);
                 });
             }).catch(err => console.log(err))
         }).catch(err => console.log(err));
@@ -417,6 +417,11 @@ function taskFlowBreak(tf_name, u_ids) {
     const msg = {
         content: `任务流 ${tf_name} 已解散`
     }
+    const template_id = TEMPLATE.BREAK_TASK_FLOW;
+    for (u_id of u_ids) {
+        sendTemplateMsg(u_id, template_id, [tf_name, '负责人已解散该任务流,您的任务流列表中该任务流已消失', formatTime(new Date())]);
+    }
+
     addMultiple(msg, u_ids);
 }
 
