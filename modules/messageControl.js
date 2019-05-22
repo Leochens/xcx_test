@@ -257,9 +257,6 @@ function completeTask(t_id) {
             tf_id: task.tf_id
         }
         const template_id = TEMPLATE.COMPLETE_TASK
-        toLeader(task.tf_id, msg, function (u_id) {
-            sendTemplateMsg(u_id, template_id, [task.t_name, task.t_describe, formatTime(new Date(task.begin_time)), formatTime(new Date())]);
-        });
         toTaskMembers(t_id, msg, function (u_id) {
             sendTemplateMsg(u_id, template_id, [task.t_name, task.t_describe, formatTime(new Date(task.begin_time)), formatTime(new Date())]);
         });
