@@ -343,7 +343,7 @@ function memberTakeBreak(tf_id, t_id, brk) {
 }
 // 请假成功 给请假人发
 function takeBreakSuccess(t_id, apply_u_id) {
-    const template_id = TEMPLATE.TASK_BREAK_RESULT;
+    const template_id = TEMPLATE.TASK_BREAK_SUCCESS;
     Task.getTaskById(t_id).then(([task]) => {
         if (!task) return console.log("task为空 在messageControl => taksBresak...")
         const tf_id = task.tf_id;
