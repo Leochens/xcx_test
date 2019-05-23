@@ -17,7 +17,9 @@ const TEMPLATE = {
     TASK_BREAK_RESULT: "S2Qln3AkKzwmij_KCQuCCPdGATFMOWeVVL4BnSAGpRQ",
     COMPLETE_TASK: "Rz-yCqQKcjYqUD8m521GVu2I1xyjxnhW3hctG-B2pkI",
     DELETE_TASK: "asPRDvAnPM_XjfXSA6gOOnfLzVll4xkY3mqTyV2gZnQ",
-    BREAK_TASK_FLOW: '17--CRH9SAWWQDmzLY3f4kpD82tFNQqi_SIxsUXJOX0'
+    BREAK_TASK_FLOW: '17--CRH9SAWWQDmzLY3f4kpD82tFNQqi_SIxsUXJOX0',
+    TICK_MEMBER: '0zZmqPDnwsWBe0QkW1Q09G3OHAZRa9sgQXkjLrMRtyQ',
+    MEMBER_QUIT: 'ulHOH0fnTdbfrHyZ40hGLek1drUfmYDUx5yex-ApWGw'
 }
 
 
@@ -194,7 +196,7 @@ function createNewTaskFlow(tf, u_id) {
 function addTaskMember(t_id, u_ids) {
     Task.getTaskById(t_id).then(([task]) => {
         const msg = {
-            content: `你有一个新的子任务需要完成 ${task.t_name}`,
+            content: `你有一个新的子任务需要完成 [${task.t_name}]`,
             t_id: t_id,
             tf_id: task.tf_id
         }
@@ -230,7 +232,7 @@ function createNewTask(t_id, u_ids) {
         const task = t[0];
         TaskFlow.getTaskFlowByTFId(task.tf_id).then(tf => {
             const msg = {
-                content: `你有一个新的子任务需要完成 ${task.t_name}`,
+                content: `你有一个新的子任务需要完成 [${task.t_name}]`,
                 t_id: t_id,
                 tf_id: task.tf_id
             }
@@ -252,7 +254,7 @@ function completeTask(t_id) {
     Task.getTaskById(t_id).then(t => {
         const task = t[0];
         const msg = {
-            content: `子任务 ${task.t_name} 已完成`,
+            content: `子任务 [${task.t_name}] 已完成`,
             t_id: task.id,
             tf_id: task.tf_id
         }
@@ -320,7 +322,7 @@ function memberTakeBreak(tf_id, t_id, brk) {
             Task.getTaskById(t_id).then(([task]) => {
                 if (!task) return;
                 const leader_msg = {
-                    content: `${nick_name} 申请请假: ${break_reason}`,
+                    content: `[${nick_name}] 申请请假: ${break_reason}`,
                     to_user_id: leader_id,
                     tf_id: tf_id,
                     t_id: t_id
@@ -393,10 +395,16 @@ function memberQuit(tf_id, u_id) {
     User.getUserInfoById(u_id).then(([user]) => {
         if (!user) return;
         const msg = {
-            content: `成员 ${user.nick_name} 已退出任务流`,
+            content: `成员 [${user.nick_name}] 已退出任务流`,
             tf_id
         }
-        toLeader(tf_id, msg);
+        TaskFlow.getTaskFlowByTFId(tf_id).then(([task_flow]) => {
+            if (!task_flow) return console.log("error: memberQuit task_flow为空");
+            const template_id = TEMPLATE.MEMBER_QUIT;
+            toLeader(tf_id, msg, function (u_id) {
+                sendTemplateMsg(u_id, template_id, [user.nick_name, formatTime(new Date()),`所属任务流[${task_flow.tf_name}]`], null, null, true);
+            });
+        }).catch(err => console.log(err));
     }).catch(err => console.log(err));
 }
 
@@ -405,17 +413,32 @@ function tickMember(tf_id, u_id) {
     User.getUserInfoById(u_id).then(([user]) => {
         if (!user) return;
         const msg = {
-            content: `成员 ${user.nick_name} 已被移出任务流`,
+            content: `成员 [${user.nick_name}] 已被移出任务流`,
             tf_id
         }
         toAll(tf_id, msg);
     }).catch(err => console.log(err));
 }
+
+function tickMe(tf_id, u_id) {
+    TaskFlow.getTaskFlowByTFId(tf_id).then(([task_flow]) => {
+        if (!task_flow) return console.log("error: tickMe  task_flow为空");
+        const msg = {
+            content: `你已被移出任务流 [${task_flow.tf_name}]`
+        }
+        // 移除的模板消息
+        const template_id = TEMPLATE.TICK_MEMBER;
+        toSingle(u_id, msg, function (u_id) {
+            sendTemplateMsg(u_id, template_id, [`您已被移出任务流[${task_flow.tf_name}]`, formatTime(new Date())], null, null, true);
+        });
+    }).catch(err => console.log(err));
+
+}
 // 任务流解散
 function taskFlowBreak(tf_name, u_ids) {
     if (!tf_name || !Array.isArray(u_ids)) return console.log("缺少tf_name或u_ids");
     const msg = {
-        content: `任务流 ${tf_name} 已解散`
+        content: `任务流 [${tf_name}] 已解散`
     }
     const template_id = TEMPLATE.BREAK_TASK_FLOW;
     for (u_id of u_ids) {
@@ -427,7 +450,7 @@ function taskFlowBreak(tf_name, u_ids) {
 
 function taskFlowLeaderTransfer(tf_id, nick_name) {
     const msg = {
-        content: `负责人更改为:${nick_name}`,
+        content: `负责人更改为:[${nick_name}]`,
         tf_id: tf_id
     }
     toAll(tf_id, msg);
@@ -441,12 +464,12 @@ function deleteTask(t_id) {
             TaskFlow.getTaskFlowByTFId(task.tf_id).then(([tf]) => {
                 const tf_name = tf.tf_name;
                 const msg = {
-                    content: `子任务${t_name}已被删除`,
+                    content: `子任务[${t_name}]已被删除`,
                     tf_id: task.tf_id
                 }
                 const template_id = TEMPLATE.DELETE_TASK;
                 toTaskMembers(t_id, msg, function (apply_u_id) {
-                    sendTemplateMsg(apply_u_id, template_id, [t_name, `所属任务流:${tf_name}`]);
+                    sendTemplateMsg(apply_u_id, template_id, [t_name, `所属任务流:[${tf_name}]`]);
                 });
                 return resolve(true);
             }).catch(err => { reject(err) });
@@ -457,6 +480,7 @@ function deleteTask(t_id) {
 module.exports = {
     memberQuit,
     tickMember,
+    tickMe,
     taskFlowBreak,
     createNewTaskFlow,
     completeTask,
