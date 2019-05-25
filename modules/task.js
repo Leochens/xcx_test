@@ -111,7 +111,35 @@ task._completeTask = function (t_id) {
 
     }).catch(e => console.log(e));
 }
+// 提前 强制完成子任务
+task.forceCompleteTask = function (t_id) {
+    // 找出该子任务的还在进行中的任务人
 
+    return new Promise((resolve, reject) => {
+        task.getStatusMapByTId(t_id).then(async status => {
+            const continueUsers = status.filter(st => st.user_status === 1);
+            const u_ids = continueUsers.map(user => user.u_id);
+            for (let u_id of u_ids) {
+                const sql = `update user_task set user_status = 2 where t_id = '${t_id}' and u_id = '${u_id}'`
+                try {
+                    const res = await dbQuery(sql);
+                    console.log(res,sql);
+                } catch (e) {
+                    console.log(e);
+                    return reject("强制完成子任务失败")
+                }
+            }
+            try {
+                await task._completeTask(t_id);
+                return resolve("强制完成子任务成功")
+            } catch (e) {
+                console.log(e);
+                return reject("强制完成子任务失败")
+            }
+        })
+    })
+
+}
 /**
  * 完成子任务
  * 当所有人都完成子任务时 才是真正完成子任务的时候

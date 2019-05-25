@@ -167,15 +167,32 @@ const review_url = '/users/:u_id/reviews';
 router.get(review_url, function (req, res) {
     const u_id = req.params.u_id;
 
-    User.getReviewList(u_id).then(list => {
+    User.getReviewList(u_id).then(async function (list) {
+        for (let item of list) {
+            let status = [];
+            try {
+
+                status = await Task.getStatusMapByTId(item.t_id) || [];
+                if (!status) throw new Error("getReviewList > getStatusMapByTId 错误");
+            } catch (e) {
+                console.log(err);
+                res.json(ERR.GET_REVIEW_LIST_FAIL);
+            }
+            const hasContinue = status.filter(st => st.user_status === 1).length; //筛选进行中的
+            if (!hasContinue) item.warn = true
+        }
+
         res.json({
-            msg: '获得审核列表成功',
+            msg: "获得审核列表成功",
             data: list
-        })
+        });
     }).catch(err => {
         console.log(err);
         res.json(ERR.GET_REVIEW_LIST_FAIL);
-    })
+    });
+
+
+
 });
 
 

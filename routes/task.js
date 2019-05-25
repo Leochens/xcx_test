@@ -244,7 +244,7 @@ router.put(break_url, function (req, res) {
         }).catch(e => {
             res.json(ERR.REFUSE_BREAK_FAILD);
         })
-    } else {  // 同意请假
+    } else {  // 同意请假 如果当前没有正在进行任务的成员
         Task.allowTakeBreak(t_id, apply_user_id).then(flag => {
             User.getUserInfoById(apply_user_id).then(([user]) => {
 
@@ -252,7 +252,8 @@ router.put(break_url, function (req, res) {
                 messageControl.takeBreakSuccess(t_id, apply_user_id) // 给任务人发结果
             }).catch(err => console.log(err));
             res.json({
-                msg: "同意请假成功"
+                msg: "同意请假成功",
+                // modalMsg: '该任务请假后您可以再去该子任务添加新的成员'
             })
         }).catch(e => {
             res.json(ERR.ALLOW_BREAK_FAILD);
@@ -261,8 +262,25 @@ router.put(break_url, function (req, res) {
 })
 
 /**
- * 完成子任务
+ * 负责人强制完成子任务
  */
+router.post('/tasks/:t_id/force_complete', function (req, res) {
+    const t_id = req.params.t_id;
+    const { u_id } = req.body;
+    if (!t_id || !u_id) return res.json(ERR.MISSING_ARGUMENT);
+    Task.forceCompleteTask(t_id).then(msg => {
+        return res.json({
+            msg: "提前完成成功"
+        })
+    }).catch(err => {
+        console.log(err);
+        res.json(ERR.COMPLETE_TASK_FAILD);
+    })
+});
+/**
+ * 任务人完成子任务
+ */
+
 router.post('/tasks/:t_id/complete', function (req, res) {
     const t_id = req.params.t_id;
     const { u_id } = req.body;
