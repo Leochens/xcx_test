@@ -19,7 +19,8 @@ const TEMPLATE = {
     DELETE_TASK: "asPRDvAnPM_XjfXSA6gOOnfLzVll4xkY3mqTyV2gZnQ",
     BREAK_TASK_FLOW: '17--CRH9SAWWQDmzLY3f4kpD82tFNQqi_SIxsUXJOX0',
     TICK_MEMBER: '0zZmqPDnwsWBe0QkW1Q09G3OHAZRa9sgQXkjLrMRtyQ',
-    MEMBER_QUIT: 'ulHOH0fnTdbfrHyZ40hGLek1drUfmYDUx5yex-ApWGw'
+    MEMBER_QUIT: 'ulHOH0fnTdbfrHyZ40hGLek1drUfmYDUx5yex-ApWGw',
+    TASK_DELAY: 'k8-Gm-FB-PSyDOxHlTx8H2kdTQOPvPQdBFFRN3Fn2B4'
 }
 
 
@@ -402,7 +403,7 @@ function memberQuit(tf_id, u_id) {
             if (!task_flow) return console.log("error: memberQuit task_flow为空");
             const template_id = TEMPLATE.MEMBER_QUIT;
             toLeader(tf_id, msg, function (u_id) {
-                sendTemplateMsg(u_id, template_id, [user.nick_name, formatTime(new Date()),`所属任务流[${task_flow.tf_name}]`], null, null, true);
+                sendTemplateMsg(u_id, template_id, [user.nick_name, formatTime(new Date()), `所属任务流[${task_flow.tf_name}]`], null, null, true);
             });
         }).catch(err => console.log(err));
     }).catch(err => console.log(err));
@@ -477,6 +478,36 @@ function deleteTask(t_id) {
     })
 }
 
+// 任务逾期提醒
+function taskDelay() {
+    // 找出所有子任务将在3小时内逾期的
+    const hour = 3;
+    Task.getBeingDelayTasks(hour).then(function (task_list) {
+        // console.log(task_list);
+        if (!task_list.length) return console.log("[逾期任务计划]未在此次轮询中检测到将要逾期任务"); // 当前无即将逾期的
+        for (let task of task_list) {
+            const t_id = task.id;
+            const msg = {
+                content: `子任务[${task.t_name}]即将在三小时内逾期,请尽快完成!`,
+                t_id: t_id,
+                tf_id: task.tf_id
+            }
+            console.log(`${hour}小时逾期提醒子任务[${task,t_name}]的所有成员`);
+            const template_id = TEMPLATE.TASK_DELAY;
+            const t_name = task.t_name;
+            const t_describe = task.t_describe;
+            toTaskMembers(t_id, msg, function (u_id) {
+                sendTemplateMsg(u_id, template_id, ['子任务即将逾期',`子任务[${t_name}]将在${hour}后逾期,请尽快完成！`,t_name, t_describe,formatTime(new Date())]);
+            });
+        }
+        const t_ids = task_list.map(task => task.id);
+        Task.updateTaskFieldByTids(t_ids, 'has_alert', true);
+
+    }).catch(err => console.log(err));
+    // 拿到这些t_id
+    // 给该t_id每个任务人员发消息 发送过delay消息的task就不要再发了 设计一个字段
+}
+
 module.exports = {
     memberQuit,
     tickMember,
@@ -493,7 +524,8 @@ module.exports = {
     joinInNewTaskFlow,
     taskFlowLeaderTransfer,
     addTaskMember,
-    deleteTask
+    deleteTask,
+    taskDelay
 }
 
 

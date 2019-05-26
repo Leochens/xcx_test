@@ -1,5 +1,6 @@
 const genId = require('../utils/genId');
 const dbQuery = require('../utils/dbQuery');
+const formatTime = require('../utils/formatTime');
 
 const task = {};
 
@@ -42,7 +43,7 @@ task.getStatusMapByTId = function (t_id) {
 task.addTask = function (tf_id, task) {
     const member = task.member;
     const t_id = genId.genUniqueId();
-    const sql = `replace into task values (
+    const sql = `replace into task(id,t_name,t_describe,begin_time,end_time,is_completed,tf_id,is_important) values (
         '${t_id}',
         '${task.t_name || "无标题"}',
         '${task.t_describe || "无描述"}',
@@ -88,9 +89,25 @@ task.updateTask = function (t_id, task) {
 }
 
 task.updateTaskField = function (t_id, field, value) {
+    if (typeof value === 'boolean' || typeof value === 'number') isInt = true;
+    let isInt = false;
     const sql = `update task set ${field}='${value}' where id = '${t_id}'`;
+    const sql_Int = `update task set ${field}=${value} where id = '${t_id}'`;
     return new Promise((resolve, reject) => {
-        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
+        dbQuery(isInt ? sql_Int : sql).then(res => resolve(res)).catch(err => reject(err));
+    })
+}
+task.updateTaskFieldByTids = function (t_ids, field, value) {
+    if (!Array.isArray(t_ids) || !t_ids.length) return console.error("t_ids不是数组或长度为0")
+    let isInt = false;
+
+    if (typeof value === 'boolean' || typeof value === 'number') isInt = true;
+    const _t_ids = t_ids.map(t_id => `'${t_id}'`);
+    const update_task_ids = _t_ids.join(',');
+    const sql = `update task set ${field}='${value}' where id in (${update_task_ids})`;
+    const sql_Int = `update task set ${field}=${value} where id in (${update_task_ids})`;
+    return new Promise((resolve, reject) => {
+        dbQuery(isInt ? sql_Int : sql).then(res => resolve(res)).catch(err => reject(err));
     })
 }
 /**
@@ -123,7 +140,7 @@ task.forceCompleteTask = function (t_id) {
                 const sql = `update user_task set user_status = 2 where t_id = '${t_id}' and u_id = '${u_id}'`
                 try {
                     const res = await dbQuery(sql);
-                    console.log(res,sql);
+                    console.log(res, sql);
                 } catch (e) {
                     console.log(e);
                     return reject("强制完成子任务失败")
@@ -234,6 +251,15 @@ task.deleteTaskMember = function (tf_id, u_id) {
         }).catch(err => reject(err)))
 }
 
+// 找出还差不到3个小时就逾期的子任务
+task.getBeingDelayTasks = function (hour) {
+    if (typeof hour != 'number') return [];
+    const now = formatTime(new Date());// 获得现在的时间
+    const sql = `select * from task where subtime(timediff(end_time,'${now}'),'0${hour}:00:00')<0 and is_completed = 0 and has_alert = 0`;
+    // console.log(sql);
+    return new Promise((resolve, reject) =>
+        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
+}
 
 
 task.checkUser = function (u_id, t_id) {

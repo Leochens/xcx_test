@@ -4,6 +4,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 const multer  = require('multer');
+const scheduleCronstyle = require('./schedule')
+
 app.use(jsonParser);
 app.use(bodyParser.urlencoded({ extended: false }));  
 app.use(cookieParser());
@@ -41,3 +43,4 @@ app.use('/',log);
 
 app.get('/', (req, res) => {  res.send('Hello World!') });
 app.listen(8899, () => console.log('后端启动成功 访问http://localhost:8899!'))
+scheduleCronstyle();
