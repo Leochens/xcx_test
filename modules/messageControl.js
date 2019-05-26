@@ -488,7 +488,7 @@ function taskDelay() {
         for (let task of task_list) {
             const t_id = task.id;
             const msg = {
-                content: `子任务[${task.t_name}]即将在三小时内逾期,请尽快完成!`,
+                content: `子任务[${task.t_name}]即将在三小时后逾期,请尽快完成!`,
                 t_id: t_id,
                 tf_id: task.tf_id
             }
@@ -497,7 +497,7 @@ function taskDelay() {
             const t_name = task.t_name;
             const t_describe = task.t_describe;
             toTaskMembers(t_id, msg, function (u_id) {
-                sendTemplateMsg(u_id, template_id, ['子任务即将逾期',`子任务[${t_name}]将在${hour}后逾期,请尽快完成！`,t_name, t_describe,formatTime(new Date())]);
+                sendTemplateMsg(u_id, template_id, ['子任务即将逾期',`子任务[${t_name}]将在${hour}小时后逾期,请尽快完成！`,t_name, t_describe,formatTime(new Date())]);
             });
         }
         const t_ids = task_list.map(task => task.id);
