@@ -492,7 +492,7 @@ function taskDelay() {
                 t_id: t_id,
                 tf_id: task.tf_id
             }
-            console.log(`${hour}小时逾期提醒子任务[${task,t_name}]的所有成员`);
+            console.log(`${hour}小时逾期提醒子任务[${task.t_name}]的所有成员`);
             const template_id = TEMPLATE.TASK_DELAY;
             const t_name = task.t_name;
             const t_describe = task.t_describe;
