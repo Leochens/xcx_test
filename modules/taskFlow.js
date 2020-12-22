@@ -161,7 +161,8 @@ taskFlow.addTaskFlow = function (u_id, tf) {
         ${tf.is_completed || false},
         '${tf.begin_time}',
         '${tf.end_time}',
-        '${tf.leader_id}');
+        '${tf.leader_id}',
+        1);
         replace into user_taskflow values(
             '${u_id}',
             '${tf_id}',
@@ -214,7 +215,7 @@ taskFlow.breakTaskFlow = function (tf_id) {
 
 
 taskFlow.getAllMemberTaskStatus = function (u_id, t_ids) {
-    if(!Array.isArray(t_ids) || !t_ids.length) return [];
+    if (!Array.isArray(t_ids) || !t_ids.length) return [];
     const arr = t_ids.map(id => `'${id}'`);
     const _str = arr.join(',');
     console.log(_str);
