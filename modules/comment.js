@@ -1,16 +1,25 @@
 const genId = require('../utils/genId');
-const dbQuery = require('../utils/dbQuery');
+// const dbQuery = require('../utils/dbQuery');
 const comment = {};
+const Comment = require('../modules/dbs/comment');
 /**
  * id	comment_type	content	create_time	u_id	t_id
  */
 
 comment.getCommentByTId = function (t_id) {
-    const sql = `select * from comment where t_id = '${t_id}' order by create_time`;
 
-    return new Promise((resolve, reject) => {
-        dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
-    })
+  return Comment.findAll({
+    where: {
+      t_id: t_id
+    },
+    order: [
+      ['createdAt', 'DESC']
+    ]
+  })
+  // const sql = `select * from comment where t_id = '${t_id}' order by create_time`;
+  // return new Promise((resolve, reject) => {
+  //   dbQuery(sql).then(res => resolve(res)).catch(err => reject(err));
+  // })
 }
 /**
  * 为task添加一个cmt
@@ -19,19 +28,26 @@ comment.getCommentByTId = function (t_id) {
  * 返回cmt的id
  */
 comment.addComment = function (cmt) {
-    const c_id = genId.genUniqueId();
+  const c_id = genId.genUniqueId();
 
-    const sql = `replace into comment values(
-        '${c_id}',
-        ${cmt.comment_type},
-        '${cmt.content}',
-        '${cmt.create_time}',
-        '${cmt.u_id}',
-        '${cmt.t_id}')`;
-        
-    return new Promise((resolve, reject) => {
-        dbQuery(sql).then(res => resolve(c_id)).catch(err => reject(err));
-    })
+  return Comment.upsert({
+    id: c_id,
+    comment_type: cmt.comment_type,
+    content: cmt.content,
+    u_id: cmt.u_id,
+    t_id: cmt.t_id
+  })
+  // const sql = `replace into comment values(
+  //       '${c_id}',
+  //       ${cmt.comment_type},
+  //       '${cmt.content}',
+  //       '${cmt.create_time}',
+  //       '${cmt.u_id}',
+  //       '${cmt.t_id}')`;
+
+  // return new Promise((resolve, reject) => {
+  //   dbQuery(sql).then(res => resolve(c_id)).catch(err => reject(err));
+  // })
 }
 
 // /**

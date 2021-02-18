@@ -15,7 +15,7 @@ UserTask.init({
   user_status: {
     type: Sequelize.TINYINT,
     defaultValue: 1,
-    comment: '用户状态 2完成 1进行中 0请假'
+    comment: '用户状态 2完成 1进行中 0请假 3请假中'
   },
   break_reason: {
     type: Sequelize.STRING,
