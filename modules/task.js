@@ -63,15 +63,17 @@ task.addTask = function (tf_id, task) {
   // const member = task.member;
   const t_id = genId.genUniqueId();
 
-  return Task.upsert({
-    id: t_id,
-    t_name: task.t_name,
-    t_describe: task.t_describe,
-    begin_time: task.begin_time,
-    end_time: task.end_time,
-    is_completed: task.is_completed || 0,
-    tf_id,
-    is_important: task.is_important || 0
+  return new Promise((resolve, reject) => {
+    Task.upsert({
+      id: t_id,
+      t_name: task.t_name,
+      t_describe: task.t_describe,
+      begin_time: task.begin_time,
+      end_time: task.end_time,
+      is_completed: task.is_completed || 0,
+      tf_id,
+      is_important: task.is_important || 0
+    }).then(res => resolve(t_id)).catch(err => reject(err));
   })
   // const sql = `replace into 
   // task(id,t_name,t_describe,begin_time,end_time,is_completed,tf_id,is_important) values (
@@ -98,6 +100,9 @@ task.addTaskMember = function (t_id, u_ids) {
   // 批量插入
   // if(!t_id||!u_ids||!Array.isArray(u_ids)) return 
   // [`${u_id}`, `${t_id}`, 1, '', '']) || [];
+  console.log("???", t_id);
+
+  if (Array.isArray(t_id)) t_id = t_id[0].id;
   const values = u_ids.map(u_id => {
     return {
       u_id,

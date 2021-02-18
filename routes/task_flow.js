@@ -228,7 +228,7 @@ router.get(url + "/simple", function (req, res) {
 router.get(url + '/:tf_id', function (req, res) {
   const u_id = req.params.u_id;
   const tf_id = req.params.tf_id;
-  TaskFlow.getTaskFlowByTFIdAndUId(tf_id, u_id).then(async function (tf) {
+  TaskFlow.getTaskFlowByTFIdAndUId(tf_id, u_id).then(async function ([tf]) {
     console.log("tf=>", tf);
     if (!tf) return res.json(res.json(ERR.TF_QUERY_FAILD))
     const tf_id = tf.id;

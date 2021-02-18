@@ -93,7 +93,7 @@ taskFlow.getTaskFlowByTFIdAndUId = function (tf_id, u_id) {
   const sql = `SELECT 
   TaskFlows.id,tf_name,tf_describe,is_completed,begin_time,end_time,leader_id,nick_name,role,category,invite,avatar_url 
   from TaskFlows 
-  LEFT JOIN UserTaskFlows on TaskFlows.id = UserTaskFlows.tf_id LEFT JOIN Users on UserTaskFlows.u_id = Users.id where task_flow.id = '${tf_id}' and UserTaskFlows.u_id = '${u_id}'`;
+  LEFT JOIN UserTaskFlows on TaskFlows.id = UserTaskFlows.tf_id LEFT JOIN Users on UserTaskFlows.u_id = Users.id where TaskFlows.id = '${tf_id}' and UserTaskFlows.u_id = '${u_id}'`;
   return new Promise((resolve, reject) => {
     dbQuery(sql).then(tf => {
       resolve(tf);
@@ -153,8 +153,10 @@ taskFlow.updateTaskFlow = function (tf_id, tf) {
 taskFlow.updateTaskFlowCategory = function (u_id, tf_id, category) {
   return UserTaskFlow.update({
     category
-  }).where({
-    u_id, tf_id
+  }, {
+    where: {
+      u_id, tf_id
+    }
   })
   // const sql = `update user_taskflow set category = '${category || '默认分类'}'
   //   where u_id = '${u_id}' and tf_id = '${tf_id}'`;
@@ -170,8 +172,10 @@ taskFlow.updateTaskFlowCategory = function (u_id, tf_id, category) {
 taskFlow.updateTaskFlowField = function (tf_id, field, value) {
   return TaskFlow.update({
     [field]: value
-  }).where({
-    tf_id
+  }, {
+    where: {
+      tf_id
+    }
   })
   // const sql = `update task_flow set ${field} = '${value}' where id='${tf_id}'`;
   // return new Promise(function (resolve, reject) {

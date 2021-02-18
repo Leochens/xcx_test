@@ -64,7 +64,7 @@ router.get(single, function (req, res) {
     console.log("userData", userData);
     const u_id = userData.u_id;
     Task.getTaskById(t_id).then(async _task => {
-      const task = _task.pop();
+      const task = _task;
       if (!task) return res.json(ERR.NO_SUB_TASK);
       TaskFlow.checkUser(task.tf_id, u_id).then(r => {
         if (!r.length) return res.json(ERR.NO_AUTH); // 该用户不是该子任务的成员 无权查看

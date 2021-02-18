@@ -18,7 +18,7 @@ message.addMessage = function (msg) {
     id,
     content: msg.content,
     is_read: 0,
-    to_user_id,
+    to_user_id: msg.to_user_id,
     tf_id: msg.tf_id,
     t_id: msg.t_id
   })
