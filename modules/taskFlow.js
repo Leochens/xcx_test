@@ -4,8 +4,10 @@ const Task = require('./task');
 const taskFlow = {};
 
 const TaskFlow = require('./dbs/task_flow');
-const UserTaskFlow = require('./dbs/user_taskflow')
-
+const _Task = require('./dbs/task');
+const UserTaskFlow = require('./dbs/user_taskflow');
+const UserTask = require('./dbs/user_task');
+const Seq = require("sequelize");
 
 // 检测该用户是不是属于该任务流
 taskFlow.checkUser = function (tf_id, u_id) {
@@ -317,17 +319,23 @@ taskFlow.breakTaskFlow = function (tf_id) {
 
 
 
-  // TODO: 在Promise中用await写 删除逻辑 
-  // UserTaskFlow.destroy({
-  //   where: {
-  //     tf_id
-  //   }
-  // })
-  const sql = `CALL break_task_flow('${tf_id}')`;
+  // const sql = `CALL break_task_flow('${tf_id}')`;
   return new Promise(async (resolve, reject) => {
-
-    dbQuery(sql).then(res => resolve(res)).catch(err => reject(err))
+    try {
+      // 删除用户和任务流的关联
+      await UserTaskFlow.destroy({ where: { tf_id } });
+      // 删除用户和子任务的关联
+      let taskIds = await _Task.findAll({ attributes: ['id'], where: { tf_id } });
+      taskIds = taskIds.map(item => item.dataValues.id);
+      await UserTask.destroy({ where: { t_id: { [Seq.Op.in]: taskIds } } })
+      // 删除子任务
+      await _Task.destroy({ where: { tf_id } });
+      return resolve(true);
+    } catch (err) {
+      return reject(err)
+    }
   })
+  // dbQuery(sql).then(res => resolve(res)).catch(err => reject(err))
 }
 
 
@@ -336,7 +344,8 @@ taskFlow.getAllMemberTaskStatus = function (u_id, t_ids) {
   const arr = t_ids.map(id => `'${id}'`);
   const _str = arr.join(',');
   console.log(_str);
-  const sql = `select * from user_task left join user on user.id = user_task.u_id where u_id='${u_id}' and t_id in (${_str})`;
+
+  const sql = `select * from UserTasks left join Users on Users.id = UserTasks.u_id where u_id='${u_id}' and t_id in (${_str})`;
   return new Promise((resolve, reject) =>
     dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))
 }
