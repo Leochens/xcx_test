@@ -12,6 +12,7 @@ const Log = require('../modules/log');
 const url = '/users/:u_id/task_flows';
 const formatTime = require('../utils/formatTime');
 const timeWithoutSecond = require('../utils/timeWithoutSecond');
+const task = require('../modules/task');
 
 
 const deleteCheck = async function (req, res, next) {
@@ -177,7 +178,7 @@ router.get(url, function (req, res) {
     for (const item of list) { // 只有这种方法可以阻塞的获得tasks
       const tf_id = item.id;
       const tasks = await Task.getTasksByTfId(tf_id);
-      item.tasks = tasks;
+      item.tasks = tasks.map(task => task.dataValues);
       for (let t of item.tasks) {
         const t_id = t.id;
         t.members = await User.getUsersByTId(t_id);
@@ -206,6 +207,7 @@ router.get(url, function (req, res) {
 router.get(url + "/simple", function (req, res) {
   const u_id = req.params.u_id;
   TaskFlow.getTaskFlowsByUserId(u_id).then(async function (list) {
+
     for (const item of list) { // 只有这种方法可以阻塞的获得tasks
       const tf_id = item.id;
       tasks = await Task.getTasksByTfId(tf_id) || [];
@@ -230,10 +232,10 @@ router.get(url + '/:tf_id', function (req, res) {
   const tf_id = req.params.tf_id;
   TaskFlow.getTaskFlowByTFIdAndUId(tf_id, u_id).then(async function ([tf]) {
     console.log("tf=>", tf);
-    if (!tf) return res.json(res.json(ERR.TF_QUERY_FAILD))
+    if (!tf) return res.json(ERR.TF_QUERY_FAILD)
     const tf_id = tf.id;
     const tasks = await Task.getTasksByTfId(tf_id) || [];
-    for (let task of tasks) {
+    for (let task of tasks.map(i => i.dataValues)) {
       const t_id = task.id;
       const members = await User.getUsersByTId(t_id) || [];
       task.member_cnt = members.length;
@@ -331,7 +333,7 @@ router.get(task_flow_data, function (req, res) {
   const tf_id = req.params.tf_id;
   const u_id = req.params.u_id;
   TaskFlow.checkUser(tf_id, u_id).then(r => {
-    if (!r.length) return res.json({ msg: "您不是该任务流的成员,无权获得数据" });
+    if (!r) return res.json({ msg: "您不是该任务流的成员,无权获得数据" });
     // 获取数据
     TaskFlow.getTaskFlowByTFId(tf_id).then(async function (task_flow) {
       try {

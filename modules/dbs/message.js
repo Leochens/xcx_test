@@ -19,7 +19,7 @@ Message.init({
     comment: '是否已读 1 是 0 否'
   },
   to_user_id: {
-    type: Sequelize.TINYINT,
+    type: Sequelize.STRING,
     allowNull: false,
     comment: '发送给谁'
   },
