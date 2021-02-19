@@ -47,7 +47,7 @@ message.addMessageToUsers = function (msg, u_ids) {
       id: genId.genUniqueId(),
       content: msg.content,
       is_read: 0,
-      u_id,
+      to_user_id: u_id,
       tf_id: msg.tf_id,
       t_id: msg.t_id
     }
@@ -77,7 +77,7 @@ message.addMessageToUsers = function (msg, u_ids) {
 message.getUnreadMessageByUserId = function (u_id) {
   // 还需要字段提纯 把不需要的剔除
   const sql = `
-    select Messages.id, content,createdAt,is_read,to_user_id,t_id,TaskFlows.id as tf_id,tf_name,t_name,TaskFlows.end_time as tf_end_time,Tasks.end_time as t_end_time from Messages LEFT JOIN TaskFlows ON Messages.tf_id = TaskFlows.id LEFT JOIN Tasks ON Messages.t_id = Tasks.id 
+    select Messages.id, content,Messages.createdAt,is_read,to_user_id,t_id,TaskFlows.id as tf_id,tf_name,t_name,TaskFlows.end_time as tf_end_time,Tasks.end_time as t_end_time from Messages LEFT JOIN TaskFlows ON Messages.tf_id = TaskFlows.id LEFT JOIN Tasks ON Messages.t_id = Tasks.id 
     where to_user_id = '${u_id}' and is_read = 0 `;
 
   return new Promise((resolve, reject) => {

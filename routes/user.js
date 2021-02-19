@@ -37,7 +37,7 @@ router.post(tf_url, function (req, res) {
   if (!u_id) { return res.json(ERR.MISSING_ARGUMENT) }
   // 进行加入预判 如果该用户已经加入了 那么就不要新加入它
   TaskFlow.checkUser(tf_id, u_id).then(r => {
-    if (r.length) return res.json(ERR.ALREADY_HAVE_THIS_USER); // 该成员已存在
+    if (r) return res.json(ERR.ALREADY_HAVE_THIS_USER); // 该成员已存在
 
     User.addTFMember(tf_id, u_id).then(flag => {
       messageControl.joinInNewTaskFlow(tf_id, u_id);

@@ -64,19 +64,21 @@ router.get(single, function (req, res) {
     console.log("userData", userData);
     const u_id = userData.u_id;
     Task.getTaskById(t_id).then(async _task => {
-      const task = _task;
+      const task = _task.dataValues;
       if (!task) return res.json(ERR.NO_SUB_TASK);
       TaskFlow.checkUser(task.tf_id, u_id).then(r => {
-        if (!r.length) return res.json(ERR.NO_AUTH); // 该用户不是该子任务的成员 无权查看
+        if (!r) return res.json(ERR.NO_AUTH); // 该用户不是该子任务的成员 无权查看
       }).catch(err => {
         console.log(err);
         return res.json(ERR.TASK_QUERY_BY_T_ID_FAILD);
       });
 
       task.members = await User.getUsersByTId(t_id || []);
+
       task.comments = await Comment.getCommentByTId(t_id) || [];
       task.status_map = await Task.getStatusMapByTId(t_id) || [];
       task.images = await Image.getImagesByTId(t_id) || [];
+      console.log(task)
       res.json({
         msg: "获取成功",
         data: [task]
