@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prod": " export NODE_ENV=production && nodemon dist/index.js",
     "build": "babel src/ -d dist",
-    "dev": "export NODE_ENV=development && nodemon index.js"
+    "dev": "export NODE_ENV=development && nodemon index.js",
+    "prod": "export NODE_ENV=production && nodemon index.js"
   },
   "author": "",
   "license": "ISC",
