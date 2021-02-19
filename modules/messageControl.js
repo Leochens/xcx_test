@@ -13,7 +13,7 @@ const TEMPLATE = {
   // START_TASK_FLOW: '2yp1OS5xu86ZF0OKi2UtbGuyFaYu8hw_nmzZtuBN1qs',
   START_TASK: 'oP8oGbTFBqhYPecPO62sa03GyO3_19a7yxN1IXBKQhg', // ok
   APPLY_TASK_BREAK: 'mRSr8zsEEd-mRSr8zsEEd-D0Wnd2BIsGdtreCXgVDRT7yHbDYLQjII',  // 请假审批通知
-  TASK_BREAK_RESULT: "_gBv9mTzp92bLEd7JYefTcCalw20m1nvhGaYTHnKnGM",   // 请假结果通知
+  TASK_BREAK_RESULT: "SFWfDtnCZ-bU5-j1silDcVmRoQMiJ4MVU6ZlwVB4SKg",   // 请假结果通知
   COMPLETE_TASK: "JrE4NelWNRaPIEChIDjH6j1a7ij0i1CxbFqDlm7Jgl0",  // 任务完成通知
   DELETE_TASK: "olaaGLavpd7xQpYysCXHTrw8zZ0q8ANo3zCVbve7_YE", // 任务删除通知
   BREAK_TASK_FLOW: 'G_W9SVewiu8Wqp6p9MjJ4ZcQsqTPEI0JcBY-AW_coXs', // 任务流解散
@@ -395,8 +395,9 @@ function takeBreakSuccess (t_id, apply_u_id) {
         toSingle(apply_u_id, msg, function (apply_u_id) {
           sendTemplateMsg(apply_u_id, template_id,
             {
-              name1: { value: user.nick_name },
-              phrase5: { value: `同意 | 所属任务流[${task_flow.tf_name}]\n所属子任务[${task.t_name}]` }
+              thing1: { value: user.nick_name },
+              phrase3: { value: `同意` },
+              thing4: { value: `所属任务流[${task_flow.tf_name}]\n所属子任务[${task.t_name}]` }
             }
             // [user.nick_name, `所属任务流[${task_flow.tf_name}]\n所属子任务[${task.t_name}]`], null, null, true
           );
@@ -426,8 +427,11 @@ function taskBreakFailed (t_id, apply_u_id, refuse_reason) {
         toSingle(apply_u_id, msg, function (apply_u_id) {
           sendTemplateMsg(apply_u_id, template_id,
             {
-              name1: { value: user.nick_name },
-              phrase5: { value: `拒绝[${refuse_reason}] | 所属任务流[${task_flow.tf_name}]\n所属子任务[${task.t_name}]` }
+
+              thing1: { value: user.nick_name },
+              phrase3: { value: `未批准` },
+              thing4: { value: `原因:${refuse_reason} | 所属任务流[${task_flow.tf_name}]\n所属子任务[${task.t_name}]` }
+
             }
             // [user.nick_name, `任务流[${task_flow.tf_name}][${task.t_name}] 请假失败:${refuse_reason}`], null, null, true
           );
