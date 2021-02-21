@@ -397,7 +397,7 @@ function takeBreakSuccess (t_id, apply_u_id) {
             {
               thing1: { value: user.nick_name },
               phrase3: { value: `同意` },
-              thing4: { value: `所属任务流[${task_flow.tf_name}]\n所属子任务[${task.t_name}]` }
+              thing4: { value: `[${task_flow.tf_name}]-[${task.t_name}]` }
             }
             // [user.nick_name, `所属任务流[${task_flow.tf_name}]\n所属子任务[${task.t_name}]`], null, null, true
           );
@@ -430,7 +430,7 @@ function taskBreakFailed (t_id, apply_u_id, refuse_reason) {
 
               thing1: { value: user.nick_name },
               phrase3: { value: `未批准` },
-              thing4: { value: `原因:${refuse_reason} | 所属任务流[${task_flow.tf_name}]\n所属子任务[${task.t_name}]` }
+              thing4: { value: `原因:${refuse_reason}` }
 
             }
             // [user.nick_name, `任务流[${task_flow.tf_name}][${task.t_name}] 请假失败:${refuse_reason}`], null, null, true
@@ -508,7 +508,7 @@ function taskFlowBreak (tf_name, u_ids) {
     sendTemplateMsg(u_id, template_id,
       {
         thing1: { value: tf_name },
-        thing2: { value: `负责人已解散该任务流,您的任务流列表中该任务流已消失 ${formatTime(new Date())}` }
+        thing2: { value: `负责人已解散该任务流,您的任务流列表中该任务流已消失` }
       },
       // [tf_name, '负责人已解散该任务流,您的任务流列表中该任务流已消失', formatTime(new Date())]
     );
