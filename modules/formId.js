@@ -1,10 +1,10 @@
 const dbQuery = require('../utils/dbQuery');
-const redis = require('redis');
-const client = redis.createClient(6379, '127.0.0.1');
+const client = require('../redis');
+
 const formId = {};
-client.auth('123456', function () {
-    console.log("认证成功");
-})
+// client.auth('123456', function () {
+//     console.log("认证成功");
+// })
 const formIdExpiretion = 1000 * 60 * 60 * 24 * 7; // 过期时间是7天
 // 为不同用户缓存form_id
 formId.addFormId = function (fid, u_id) {

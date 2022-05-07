@@ -18,6 +18,8 @@ user.insertUserByOpenId = function (openid) {
         const u_id = genId.genUniqueUserId(openid);
 
         console.log('这边来了一个新人，大家一起欺负他,他的openid==>', openid);
+        
+
         User.upsert({
           id: u_id,
           openid

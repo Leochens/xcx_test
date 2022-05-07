@@ -3,7 +3,7 @@
 let DB = {
   host: 'localhost',
   user: 'root',
-  password: 'root',
+  password: '659332zhl',
   database: 'xcx_task_flow',
   multipleStatements: true,
   charset: 'utf8mb4'
