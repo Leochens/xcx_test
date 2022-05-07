@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src/ -d dist",
     "dev": "export NODE_ENV=development && nodemon index.js",
-    "prod": "export NODE_ENV=production && nodemon index.js"
+    "prod": "export NODE_ENV=production && nodemon index.js",
+    "start": "export NODE_ENV=production && node index.js"
   },
   "author": "",
   "license": "ISC",
