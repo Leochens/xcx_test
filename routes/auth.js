@@ -9,8 +9,6 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const client = require('../redis');
 const ERR = require('../config/error');
-const Redis = require("ioredis")
-let redisClient = new Redis()
 
 const options = {
     client: client,
