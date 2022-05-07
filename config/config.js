@@ -24,6 +24,7 @@ if (process.env.NODE_ENV == 'production') {
   DB = {
     host: 'localhost',
     user: 'root',
+    port:19277,
     password: '659332@ZHL',
     database: 'xcx_task_flow',
     multipleStatements: true,
