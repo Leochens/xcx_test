@@ -1,5 +1,13 @@
 const redis = require('redis')
-const client = redis.createClient({ });//这里填写redis的密码
+
+let option = {};
+if (process.env.NODE_ENV == 'production') {
+  option = {
+    password: '123456'
+  }
+}
+console.log(option)
+const client = redis.createClient(option); //这里填写redis的密码
 
 
 
