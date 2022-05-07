@@ -3,6 +3,7 @@ const { DB } = require('./config/config');
 const sequelize = new Sequelize(DB.database, DB.user, DB.password, {
   host: DB.host,
   dialect: 'mysql',
+  port: DB.port,
   pool: {
     max: 5,
     min: 0,

@@ -2,6 +2,7 @@ let DB = {
   host: 'localhost',
   user: 'root',
   password: '659332zhl',
+  port: 3306,
   database: 'xcx_task_flow',
   multipleStatements: true,
   charset: 'utf8mb4'
@@ -12,6 +13,7 @@ if (process.env.NODE_ENV == 'development') {
     host: 'localhost',
     user: 'root',
     password: 'root',
+    port: 3306,
     database: 'xcx_task_flow',
     multipleStatements: true,
     charset: 'utf8mb4'
