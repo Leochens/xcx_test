@@ -402,7 +402,7 @@ task.deleteTaskMember = function (tf_id, u_id) {
 task.getBeingDelayTasks = function (hour) {
   if (typeof hour != 'number') return [];
   const now = formatTime(new Date());// 获得现在的时间
-  const sql = `select * from Tasks where subtime(timediff(end_time,'${now}'),'0${hour}:00:00')<0 and is_completed = 0 and has_alert = 0`;
+  const sql = `select * from Tasks where subtime(timediff(end_time,'${now}'),'0${hour}:00:00')<0 and subtime(timediff(end_time,'${now}'),'0${hour}:00:00') > -1000 and is_completed = 0 and has_alert = 0`;
   // console.log(sql);
   return new Promise((resolve, reject) =>
     dbQuery(sql).then(res => resolve(res)).catch(err => reject(err)))

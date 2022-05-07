@@ -51,8 +51,14 @@ const sendMessage = function (touser, template_id, data, _page) {
     // const url = `https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${token}`;
     const url = `https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=${token}`;
     function callback (error, response, data) {
+
       if (!error && response.statusCode == 200) {
+
+        if(data.errcode != null){
+          return;
+        }
         console.log("模板消息成功=>", data);
+
       }
     }
     request({
