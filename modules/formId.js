@@ -1,4 +1,3 @@
-const dbQuery = require('../utils/dbQuery');
 const client = require('../redis');
 
 const formId = {};
