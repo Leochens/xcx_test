@@ -24,7 +24,7 @@ if (process.env.NODE_ENV == 'production') {
   DB = {
     host: 'localhost',
     user: 'root',
-    password: '123456',
+    password: '659332@ZHL',
     database: 'xcx_task_flow',
     multipleStatements: true,
     charset: 'utf8mb4'
